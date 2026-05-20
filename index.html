@@ -19,7 +19,7 @@
 <style>
   :root {
     --bg-base: #EAE3D5;
-    --surface: rgba(255, 255, 255, 0.65); /* 透明度を上げてオーロラを透かす */
+    --surface: rgba(255, 255, 255, 0.65); /* オーロラを透かすグラスモーフィズム */
     --surface-active: rgba(255, 255, 255, 0.85);
     --surface-dark: rgba(30, 42, 31, 0.85);
     --border: rgba(255, 255, 255, 0.4);
@@ -37,6 +37,8 @@
     --user-koji: #4A72B0;
     --user-hiromi: #B5634D;
     
+    /* 動的補正用ベースカラー変数 */
+    --nuka-color: #2A3E2C;
     /* オーロラの速度（JS制御用） */
     --aurora-speed: 20s;
   }
@@ -63,7 +65,7 @@
   }
 
   /* ==========================================
-     ★ 強化版・呼吸するぬか床背景（Aurora UI）
+     ★ 呼吸するぬか床背景（Aurora UIレイヤー）
      ========================================== */
   .aurora-bg-container {
     position: fixed;
@@ -80,6 +82,7 @@
     opacity: 0.55;
     will-change: transform;
     transform: translate3d(0,0,0);
+    transition: background 1.5s ease, opacity 1s ease; /* AIバイタル反映を滑らかに */
   }
   /* 熟成アースゴールド（大） */
   .blob-gold {
@@ -95,7 +98,7 @@
     bottom: -5%; right: -10%;
     animation: walk-green calc(var(--aurora-speed) * 1.3) ease-in-out infinite alternate;
   }
-  /* 深層の酵母マゼンタアース（小・隠し味） */
+  /* 深層の酵母マゼンタアース（小） */
   .blob-clay {
     width: 280px; height: 280px;
     background: #C27D66;
@@ -128,7 +131,7 @@
     padding-top: env(safe-area-inset-top);
   }
 
-  /* 高級モダンヘッダー */
+  /* ヘッダー */
   #header {
     background: rgba(37, 34, 28, 0.92);
     backdrop-filter: blur(15px);
@@ -151,15 +154,16 @@
     border-radius: 24px;
     padding: 6px 14px;
     cursor: pointer;
+    touch-action: manipulation;
   }
   #user-toggle:active { background: rgba(255,255,255,0.18); }
   #user-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--user-koji); box-shadow: 0 0 6px var(--user-koji); }
   #user-name { font-size: 13px; font-weight: 700; color: #fff; }
 
-  /* コンテンツ外周の余白を広げてゆとりを確保 */
+  /* コンテンツ外周余白 */
   #content { flex: 1; padding: 24px 20px 120px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-  /* AIメッセージ：高級サロンのインフォ風 */
+  /* AIメッセージカード */
   #ai-card {
     background: var(--surface-dark);
     border: 1px solid rgba(255,255,255,0.1);
@@ -169,7 +173,7 @@
     display: none;
     box-shadow: 0 12px 30px rgba(37,34,28,0.15);
   }
-  #ai-card .ai-label { font-size: 10px; color: var(--green-light); letter-spacing: 2px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+  #ai-card .ai-label { font-size: 11px; color: var(--green-light); letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
   #ai-card .ai-text { font-size: 13.5px; color: #ECF2EB; line-height: 1.7; font-weight: 500; }
   #ai-card .ai-date { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 10px; text-align: right; }
 
@@ -181,7 +185,7 @@
     text-transform: uppercase;
   }
 
-  /* ★モダンハイエンド・グラスモーフィズムカード */
+  /* ★ハイエンド・グラスモーフィズムカード */
   .item-card, #add-panel, #history-list, .rec-card {
     background: var(--surface);
     backdrop-filter: blur(20px) saturate(160%);
@@ -191,7 +195,6 @@
     box-shadow: 0 10px 28px rgba(74, 69, 58, 0.05);
   }
 
-  /* アイテムカード：ぽってりとした立体感 */
   .item-card {
     padding: 16px 18px;
     margin-bottom: 14px;
@@ -202,7 +205,7 @@
   }
   .item-card:active { transform: scale(0.99); }
   
-  /* 緊急アラート：グラデーションとシャドウで警告 */
+  /* 緊急アラートカード */
   .item-card.urgent {
     background: var(--orange-pale);
     border-color: rgba(224, 139, 82, 0.25);
@@ -214,7 +217,6 @@
   .item-card .item-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
   .item-card .item-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
   
-  /* バッジ類のモダン化 */
   .badge-time {
     font-size: 11px; font-weight: 700;
     padding: 4px 11px; border-radius: 20px;
@@ -228,15 +230,14 @@
   .badge-user.koji { background: rgba(74, 114, 176, 0.12); color: var(--user-koji); }
   .badge-user.hiromi { background: rgba(181, 99, 77, 0.12); color: var(--user-hiromi); }
   
-  /* 取り出すボタンのフラット高級化 */
   .btn-remove {
-    background: var(--green-dark); 
-    border: none;
+    background: var(--green-dark); border: none;
     border-radius: 14px; padding: 10px 16px;
     cursor: pointer; font-size: 12px; font-weight: 700;
     color: #FFFBF5; white-space: nowrap;
     transition: all 0.15s; flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15);
+    touch-action: manipulation;
   }
   .btn-remove.urgent { background: var(--orange); box-shadow: 0 4px 12px rgba(224, 139, 82, 0.2); }
   .btn-remove:active { transform: scale(0.94); opacity: 0.9; }
@@ -256,7 +257,7 @@
   }
   #empty-state .empty-emoji { font-size: 42px; display: block; margin-bottom: 12px; }
 
-  /* 浮遊するメインアクションボタン */
+  /* メインアクションボタン */
   #add-btn {
     width: 100%; background: var(--green-dark); color: #FFFBF5;
     border: none; border-radius: 20px; padding: 18px;
@@ -264,6 +265,7 @@
     margin-top: 12px; letter-spacing: 0.5px;
     box-shadow: 0 8px 24px rgba(42, 62, 44, 0.25);
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    touch-action: manipulation;
   }
   #add-btn:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15); }
   
@@ -276,7 +278,6 @@
   }
   .veg-grid { display: flex; flex-wrap: wrap; gap: 8px; }
   
-  /* 素材セレクトボタン */
   .veg-btn {
     background: rgba(255, 255, 255, 0.5); 
     border: 1px solid rgba(255,255,255,0.4);
@@ -284,6 +285,7 @@
     cursor: pointer; text-align: center;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); flex: 1 1 calc(25% - 8px);
     max-width: calc(25% - 6px); box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    touch-action: manipulation;
   }
   .veg-btn .v-emoji { font-size: 26px; line-height: 1; display: block; }
   .veg-btn .v-name { font-size: 10px; color: var(--text-soft); font-weight: 600; margin-top: 5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -306,12 +308,14 @@
     flex: 1; background: rgba(0,0,0,0.05); border: none;
     border-radius: 16px; padding: 14px;
     cursor: pointer; font-size: 14px; color: var(--text-soft); font-weight: 700;
+    touch-action: manipulation;
   }
   .btn-confirm {
     flex: 2; background: var(--green-dark); border: none;
     border-radius: 16px; padding: 14px;
     cursor: pointer; font-size: 14px; color: #fff; font-weight: 800;
     box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15);
+    touch-action: manipulation;
   }
   .btn-confirm:disabled { background: #C5BEB0 !important; cursor: not-allowed; opacity: 0.5; box-shadow: none; }
 
@@ -325,6 +329,7 @@
     padding: 18px; font-size: 15px; font-weight: 800;
     cursor: pointer; margin-bottom: 14px; color: #fff;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    touch-action: manipulation;
   }
   .fb-btn.perfect { background: var(--green-dark); box-shadow: 0 6px 20px rgba(42,62,44,0.25); }
   .fb-btn.light { background: var(--green-mid); }
@@ -388,7 +393,7 @@
     border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px;
   }
 
-  /* ★超高級すりガラスボトムナビ（シアターブレンド） */
+  /* 高級すりガラスボトムナビ */
   #bottom-nav {
     position: fixed; bottom: 0; width: 100%; max-width: 420px;
     background: rgba(37, 34, 28, 0.88);
@@ -401,6 +406,7 @@
   .nav-btn {
     flex: 1; background: none; border: none; padding: 16px 8px 12px; cursor: pointer;
     display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative;
+    touch-action: manipulation;
   }
   .nav-emoji { font-size: 22px; opacity: 0.4; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
   .nav-btn.active .nav-emoji { opacity: 1; transform: translateY(-2px) scale(1.1); }
@@ -590,8 +596,11 @@ let mockHistory = [
   { id:'h2', vegEmoji:'🧅', vegName:'かぶ', addedAt: new Date(Date.now()-7*86400000).toISOString(), removedAt: new Date(Date.now()-5*86400000).toISOString(), userId:'hiromi', userName:'ひろみ', feedback:'light' },
 ];
 let mockAiMsg = {
+  generatedAt: new Date().toLocaleDateString('ja-JP'),
   text: 'こうじさんはきゅうりをよく漬けてますね。ひろみさんはゆで卵がお好きみたい。かぶもたまに漬けると糠床が喜びますよ🥬',
-  date: new Date().toLocaleDateString('ja-JP')
+  lacticAcidActivity: 0.6,
+  moistureLevel: 0.5,
+  nukaEmotion: 'stable'
 };
 
 function mockApi(params) {
@@ -599,6 +608,12 @@ function mockApi(params) {
   if (action === 'getItems') return Promise.resolve({ ok:true, data: mockItems });
   if (action === 'getHistory') return Promise.resolve({ ok:true, data: mockHistory });
   if (action === 'getAiMessage') return Promise.resolve({ ok:true, data: mockAiMsg });
+  if (action === 'getRecommend') {
+    return Promise.resolve({ ok:true, data: [
+      { emoji:'🧀', name:'クリームチーズ', reason:'AI判定：濃厚でお酒のつまみに最高、今のバイタルに最適です', tag:'変化球', forUser:'both' },
+      { emoji:'🥑', name:'アボカド', reason:'AI判定：クリーミーに仕上がる変化球。ひろみさんにおすすめ', tag:'変化球', forUser:'hiromi' }
+    ]});
+  }
   if (action === 'addItem') {
     const item = { id: 'mock_' + Date.now(), vegEmoji: params.vegEmoji, vegName: params.vegName, hours: params.hours, adjustedHours: params.hours, addedAt: new Date().toISOString(), userId: params.userId, userName: params.userName };
     mockItems.push(item);
@@ -612,6 +627,10 @@ function mockApi(params) {
   return Promise.resolve({ ok:true });
 }
 
+// ============================================================
+// [差分1] loadAll()
+// バイタルデータを受け取り、Aurora色・速度に反映する
+// ============================================================
 async function loadAll() {
   const [itemsRes, histRes, aiRes] = await Promise.all([
     gasCall({ action:'getItems' }),
@@ -620,13 +639,66 @@ async function loadAll() {
   ]);
   if (itemsRes?.ok) { items = itemsRes.data || []; }
   if (histRes?.ok)  { history = histRes.data || []; }
-  if (aiRes?.ok && aiRes.data?.text) {
-    document.getElementById('ai-card').style.display = 'block';
-    document.getElementById('ai-text').textContent = aiRes.data.text;
-    document.getElementById('ai-date').textContent = aiRes.data.date;
+
+  // ① バイタルデータをAuroraに反映
+  if (aiRes?.ok && aiRes.data) {
+    const d = aiRes.data;
+    if (d.text) {
+      document.getElementById('ai-card').style.display = 'block';
+      document.getElementById('ai-text').textContent = d.text;
+      document.getElementById('ai-date').textContent = d.generatedAt || '';
+    }
+    applyNukaVital(d);
   }
+
   renderItems();
   renderHistory();
+}
+
+// ============================================================
+// [差分2] applyNukaVital()
+// GASから返ってきたバイタルJSONをAurora UIに反映する
+// ============================================================
+function applyNukaVital(vital) {
+  if (!vital) return;
+
+  // 乳酸菌活発度 → オーロラ速度（0.0=遅い, 1.0=激しい）
+  const activity = Math.min(1.0, Math.max(0.0, vital.lacticAcidActivity || 0.5));
+  const speedS = Math.round(6 + (1.0 - activity) * 26); // 6s〜32sの範囲
+  document.documentElement.style.setProperty('--aurora-speed', speedS + 's');
+
+  // 水分量 → blobのopacity（高水分=透明感アップ）
+  const moisture = Math.min(1.0, Math.max(0.0, vital.moistureLevel || 0.6));
+  const opacity = (0.35 + moisture * 0.3).toFixed(2); // 0.35〜0.65
+  document.querySelectorAll('.aurora-blob').forEach(el => {
+    el.style.opacity = opacity;
+  });
+
+  // ぬか床の機嫌 → blobカラーシフト
+  const emotion = vital.nukaEmotion || 'stable';
+  const emotionColors = {
+    happy:  { gold: '#E8B060', green: '#70A060', clay: '#D4906A' },
+    hungry: { gold: '#C8844C', green: '#506840', clay: '#B86050' }, // くすんだ色
+    stable: { gold: '#DE9E52', green: '#628A53', clay: '#C27D66' },
+    tired:  { gold: '#B89060', green: '#4A6840', clay: '#A06858' }, // 落ち着いた色
+  };
+  const cols = emotionColors[emotion] || emotionColors.stable;
+  const blobGold  = document.querySelector('.blob-gold');
+  const blobGreen = document.querySelector('.blob-green');
+  const blobClay  = document.querySelector('.blob-clay');
+  if (blobGold)  blobGold.style.background  = cols.gold;
+  if (blobGreen) blobGreen.style.background = cols.green;
+  if (blobClay)  blobClay.style.background  = cols.clay;
+
+  // AIが提案するベースカラーをCSS変数に反映
+  if (vital.colorShift) {
+    document.documentElement.style.setProperty('--nuka-color', vital.colorShift);
+  }
+
+  // ぬか床の機嫌をAIカードのラベルに反映
+  const emotionLabel = { happy: '🥒 ぬか床、機嫌よし', hungry: '😮 ぬか床、腹ぺこ', stable: '🤖 ぬか床の機嫌', tired: '😴 ぬか床、お疲れ気味' };
+  const labelEl = document.querySelector('#ai-card .ai-label');
+  if (labelEl) labelEl.textContent = emotionLabel[emotion] || '🤖 ぬか床の機嫌';
 }
 
 function formatRemaining(addedAtStr, adjustedHours) {
@@ -650,17 +722,17 @@ function relativeDate(isoStr) {
 
 const FB_EMOJI = { perfect:'😋', light:'😅', heavy:'😬', '':'—' };
 
-// ★ ぬか床バイタル同期
+// ============================================================
+// [差分5] updateAuroraVital()
+// ============================================================
 function updateAuroraVital() {
-  let baseSpeed = 24; 
   const urgentCount = items.filter(item => {
     const readyAt = new Date(new Date(item.addedAt).getTime() + item.adjustedHours * 3600000);
     return (readyAt - Date.now()) <= 0;
   }).length;
-
-  let speedScore = baseSpeed - (items.length * 1.5) - (urgentCount * 4);
-  if (speedScore < 6) speedScore = 6; 
-  document.documentElement.style.setProperty('--aurora-speed', `${speedScore}s`);
+  let speed = 24 - (items.length * 1.5) - (urgentCount * 4);
+  if (speed < 6) speed = 6;
+  document.documentElement.style.setProperty('--aurora-speed', speed + 's');
 }
 
 function renderItems() {
@@ -734,27 +806,76 @@ function renderHistory() {
   });
 }
 
-function renderRecommend() {
+// ============================================================
+// [差分3] renderRecommend() 
+// GAS getRecommend を呼んでAI提案を表示。エラー時はフォールバック
+// ============================================================
+async function renderRecommend() {
+  const list = document.getElementById('rec-list');
+
+  // ローディング表示
+  list.innerHTML = `
+    <div style="text-align:center;padding:40px 0;color:var(--text-soft);">
+      <div style="font-size:32px;margin-bottom:10px;animation:spin 1.5s linear infinite;display:inline-block;">🥒</div>
+      <div style="font-size:13px;margin-top:4px;">AIが糠床と相談中…</div>
+    </div>`;
+
+  const res = await gasCall({ action: 'getRecommend' });
+
+  if (!res?.ok || !Array.isArray(res.data) || res.data.length === 0) {
+    renderRecommendFallback();
+    return;
+  }
+
+  const tagCls   = { '季節':'season', '定番':'season', '変化球':'twist', '珍しい':'unique' };
+  const userLabel = { koji:'こうじ向き', hiromi:'ひろみ向き', both:'' };
+
+  list.innerHTML = '';
+  res.data.slice(0, 5).forEach(r => {
+    const tag = r.tag || '定番';
+    const forUser = r.forUser || 'both';
+    const div = document.createElement('div');
+    div.className = 'rec-card';
+    div.innerHTML = `
+      <div class="rc-emoji">${r.emoji}</div>
+      <div class="rc-info">
+        <div class="rc-name">${r.name}${userLabel[forUser] ? `<span style="font-size:10px;font-weight:600;color:var(--text-faint);margin-left:6px;">${userLabel[forUser]}</span>` : ''}</div>
+        <div class="rc-reason">${r.reason}</div>
+      </div>
+      <div class="rec-tag ${tagCls[tag] || 'season'}">${tag}</div>
+    `;
+    list.appendChild(div);
+  });
+
+  // 別の提案ボタン
+  const btn = document.createElement('button');
+  btn.className = 'btn-back';
+  btn.style.cssText = 'background:rgba(0,0,0,0.06);color:var(--text-mid);margin-top:6px;margin-bottom:10px;';
+  btn.textContent = '🔄 別の提案を見る';
+  btn.onclick = () => renderRecommend();
+  list.appendChild(btn);
+}
+
+// フォールバック（GAS未接続 or エラー時）
+function renderRecommendFallback() {
   const month = new Date().getMonth() + 1;
   const seasonal = month >= 6 && month <= 9
-    ? [{ emoji:'🍋', name:'みょうが', reason:'夏が旬、さっぱりした酸味が最高', tag:'season' }]
+    ? [{ emoji:'🍋', name:'みょうが', reason:'夏が旬、さっぱりした酸味が最高', tag:'季節' }]
     : month >= 10 && month <= 12
-    ? [{ emoji:'🥬', name:'白菜',  reason:'冬野菜の定番、深漬けがおいしい', tag:'season' }]
-    : [{ emoji:'🫑', name:'パプリカ', reason:'春〜夏が旬、彩りもきれい', tag:'season' }];
+    ? [{ emoji:'🥬', name:'白菜', reason:'冬野菜の定番、深漬けがおいしい', tag:'季節' }]
+    : [{ emoji:'🫑', name:'パプリカ', reason:'春〜夏が旬、彩りもきれい', tag:'季節' }];
 
   const recentNames = history.slice(0, 5).map(h => h.vegName);
   const candidates = [
     ...seasonal,
-    { emoji:'🧀', name:'クリームチーズ', reason:'濃厚でお酒のつまみに最高', tag:'twist' },
-    { emoji:'🥑', name:'アボカド', reason:'クリーミーに仕上がる変化球', tag:'twist' },
-    { emoji:'🫛', name:'スナップえんどう', reason:'食感が楽しい、短時間でOK', tag:'unique' },
-    { emoji:'🍅', name:'ミニトマト', reason:'意外と合う、6時間でOK', tag:'unique' },
-    { emoji:'🧄', name:'にんにく', reason:'長漬けで深みが出る', tag:'unique' },
+    { emoji:'🧀', name:'クリームチーズ', reason:'濃厚でお酒のつまみに最高', tag:'変化球' },
+    { emoji:'🥑', name:'アボカド', reason:'クリーミーに仕上がる変化球', tag:'変化球' },
+    { emoji:'🫛', name:'スナップえんどう', reason:'食感が楽しい、短時間でOK', tag:'珍しい' },
+    { emoji:'🍅', name:'ミニトマト', reason:'意外と合う、6時間でOK', tag:'珍しい' },
+    { emoji:'🧄', name:'にんにく', reason:'長漬けで深みが出る', tag:'珍しい' },
   ].filter(c => !recentNames.includes(c.name));
 
-  const tagLabel = { season:'季節', twist:'変化球', unique:'珍しい' };
-  const tagCls   = { season:'season', twist:'twist', unique:'unique' };
-
+  const tagCls = { '季節':'season', '変化球':'twist', '珍しい':'unique' };
   const list = document.getElementById('rec-list');
   list.innerHTML = '';
   candidates.slice(0, 5).forEach(r => {
@@ -766,7 +887,7 @@ function renderRecommend() {
         <div class="rc-name">${r.name}</div>
         <div class="rc-reason">${r.reason}</div>
       </div>
-      <div class="rec-tag ${tagCls[r.tag]}">${tagLabel[r.tag]}</div>
+      <div class="rec-tag ${tagCls[r.tag] || 'season'}">${r.tag}</div>
     `;
     list.appendChild(div);
   });
@@ -857,6 +978,10 @@ function startRemove(id) {
   showScreen('feedback');
 }
 
+// ============================================================
+// [差分4] submitFeedback()
+// showScreenとrenderRecommendの呼び出し順を修正
+// ============================================================
 async function submitFeedback(result) {
   if (!pendingRemove) return;
   const res = await gasPost('removeItem', { id: pendingRemove.id, feedback: result });
@@ -868,8 +993,8 @@ async function submitFeedback(result) {
     pendingRemove = null;
     renderItems();
     renderHistory();
-    renderRecommend();
     showScreen('recommend');
+    renderRecommend(); // 画面表示後に非同期でロード
   }
 }
 
