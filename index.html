@@ -13,32 +13,32 @@
 <meta name="apple-mobile-web-app-title" content="ぬかろぐ">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<meta name="theme-color" content="#2D3D2E">
+<meta name="theme-color" content="#1E2A1F">
 <meta name="application-name" content="ぬかろぐ">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
   :root {
-    --bg: #F5F0E8;
-    --surface: rgba(253, 250, 244, 0.75); /* グラスモーフィズム透過 */
-    --surface2: rgba(237, 232, 220, 0.8);
-    --border: rgba(224, 216, 200, 0.4);
-    --green-dark: #3D5A3E;
-    --green-mid: #6B8F5E;
-    --green-light: #A8C5A0;
-    --green-pale: rgba(232, 240, 230, 0.8);
-    --orange: #E8A87C;
-    --orange-pale: rgba(255, 240, 228, 0.85);
-    --red-soft: #C17D6A;
-    --text: #2D2A24;
-    --text-mid: #5A5550;
-    --text-soft: #7A7060;
-    --text-faint: #9A9080;
-    --user-koji: #5B82C0;
-    --user-hiromi: #C17D6A;
-    --nav-bg: rgba(45, 61, 46, 0.85); /* ナビもすりガラス化 */
+    --bg-base: #EAE3D5;
+    --surface: rgba(255, 255, 255, 0.65); /* 透明度を上げてオーロラを透かす */
+    --surface-active: rgba(255, 255, 255, 0.85);
+    --surface-dark: rgba(30, 42, 31, 0.85);
+    --border: rgba(255, 255, 255, 0.4);
+    --green-dark: #2A3E2C;
+    --green-mid: #55724D;
+    --green-light: #9BB88F;
+    --green-pale: rgba(213, 227, 208, 0.7);
+    --orange: #E08B52;
+    --orange-pale: rgba(254, 236, 222, 0.75);
+    --red-soft: #B5634D;
+    --text: #25221C;
+    --text-mid: #524D44;
+    --text-soft: #756D5F;
+    --text-faint: #968D7E;
+    --user-koji: #4A72B0;
+    --user-hiromi: #B5634D;
     
-    /* プランC：ぬか床の基本脈動速度（JSから動的に上書きされます） */
-    --aurora-speed: 25s;
+    /* オーロラの速度（JS制御用） */
+    --aurora-speed: 20s;
   }
   
   * { 
@@ -48,10 +48,9 @@
     -webkit-tap-highlight-color: transparent; 
   }
   
-  /* iOSでの不快な画面引っ張りバウンスを抑制し、オーロラの土台を作る */
   body {
-    background: #EDE5D9;
-    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background-color: var(--bg-base);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Hiragino Kaku Gothic ProN', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -60,48 +59,63 @@
     overflow-x: hidden;
     position: relative;
     overscroll-behavior-y: none;
+    letter-spacing: -0.2px;
   }
 
   /* ==========================================
-     ★ プランC：蠢くぬか床オーラ（Aurora UI）
+     ★ 強化版・呼吸するぬか床背景（Aurora UI）
      ========================================== */
-  body::before, body::after {
-    content: '';
+  .aurora-bg-container {
     position: fixed;
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    filter: blur(90px);
+    top: 0; left: 0; right: 0; bottom: 0;
     z-index: -1;
-    mix-blend-mode: multiply; /* ぬか床らしい深みのある色混ざり */
-    opacity: 0.45;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, #F5EFEB 0%, #E2D7C5 100%);
+  }
+  .aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
     will-change: transform;
-    transform: translate3d(0,0,0); /* iPhone GPUアクセラレーション強制 */
+    transform: translate3d(0,0,0);
   }
-  /* ぬか床の熟成アースゴールド */
-  body::before {
-    background: radial-gradient(circle, #D4A373 0%, rgba(255,255,255,0) 70%);
-    top: 15%;
-    left: -15%;
-    animation: aurora-walk-1 var(--aurora-speed) ease-in-out infinite alternate;
+  /* 熟成アースゴールド（大） */
+  .blob-gold {
+    width: 450px; height: 450px;
+    background: #DE9E52;
+    top: -10%; left: -20%;
+    animation: walk-gold var(--aurora-speed) ease-in-out infinite alternate;
   }
-  /* 活発な乳酸菌フレッシュグリーン */
-  body::after {
-    background: radial-gradient(circle, #83A374 0%, rgba(255,255,255,0) 70%);
-    bottom: 20%;
-    right: -15%;
-    animation: aurora-walk-2 calc(var(--aurora-speed) * 1.3) ease-in-out infinite alternate;
+  /* 活発な乳酸菌発酵グリーン（中） */
+  .blob-green {
+    width: 400px; height: 400px;
+    background: #628A53;
+    bottom: -5%; right: -10%;
+    animation: walk-green calc(var(--aurora-speed) * 1.3) ease-in-out infinite alternate;
+  }
+  /* 深層の酵母マゼンタアース（小・隠し味） */
+  .blob-clay {
+    width: 280px; height: 280px;
+    background: #C27D66;
+    top: 40%; right: -10%;
+    animation: walk-clay calc(var(--aurora-speed) * 1.7) ease-in-out infinite alternate;
   }
 
-  @keyframes aurora-walk-1 {
+  @keyframes walk-gold {
     0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(60px, 40px, 0) scale(1.15); }
-    100% { transform: translate3d(-30px, 80px, 0) scale(0.95); }
+    50% { transform: translate3d(80px, 60px, 0) scale(1.15); }
+    100% { transform: translate3d(-20px, 120px, 0) scale(0.9); }
   }
-  @keyframes aurora-walk-2 {
+  @keyframes walk-green {
     0% { transform: translate3d(0, 0, 0) scale(1.1); }
-    50% { transform: translate3d(-80px, -50px, 0) scale(0.85); }
-    100% { transform: translate3d(40px, 30px, 0) scale(1.2); }
+    50% { transform: translate3d(-90px, -70px, 0) scale(0.85); }
+    100% { transform: translate3d(40px, 20px, 0) scale(1.25); }
+  }
+  @keyframes walk-clay {
+    0% { transform: translate3d(0, 0, 0) scale(0.9); }
+    100% { transform: translate3d(-60px, 40px, 0) scale(1.2); }
   }
 
   #app {
@@ -111,333 +125,298 @@
     display: flex;
     flex-direction: column;
     position: relative;
-    background: rgba(245, 240, 232, 0.35); /* 背後のオーロラを程よく通す */
-    padding-top: env(safe-area-inset-top); /* iPhoneのノッチ対応 */
+    padding-top: env(safe-area-inset-top);
   }
 
-  /* ヘッダー */
+  /* 高級モダンヘッダー */
   #header {
-    background: var(--green-dark);
-    padding: 16px 18px 14px;
+    background: rgba(37, 34, 28, 0.92);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 18px 20px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
   }
-  #header .logo-sub { font-size: 10px; color: var(--green-light); letter-spacing: 2px; margin-bottom: 2px; }
-  #header .logo-main { font-size: 20px; font-weight: 800; color: var(--bg); letter-spacing: -0.5px; }
+  #header .logo-sub { font-size: 9px; color: var(--green-light); letter-spacing: 3px; font-weight: 700; margin-bottom: 3px; }
+  #header .logo-main { font-size: 22px; font-weight: 800; color: #FFFBF5; letter-spacing: -0.5px; }
   #user-toggle {
     display: flex; align-items: center; gap: 8px;
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
     padding: 6px 14px;
     cursor: pointer;
-    transition: background 0.2s;
   }
-  #user-toggle:active { background: rgba(255,255,255,0.22); }
-  #user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--user-koji); }
+  #user-toggle:active { background: rgba(255,255,255,0.18); }
+  #user-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--user-koji); box-shadow: 0 0 6px var(--user-koji); }
   #user-name { font-size: 13px; font-weight: 700; color: #fff; }
 
-  /* コンテンツ */
-  #content { flex: 1; padding: 20px 16px 100px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  /* コンテンツ外周の余白を広げてゆとりを確保 */
+  #content { flex: 1; padding: 24px 20px 120px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-  /* AIメッセージカード */
+  /* AIメッセージ：高級サロンのインフォ風 */
   #ai-card {
-    background: linear-gradient(135deg, rgba(45, 61, 46, 0.9) 0%, rgba(61, 90, 62, 0.95) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(168,197,160,0.2);
-    border-radius: 18px;
-    padding: 16px 18px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
+    background: var(--surface-dark);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 24px;
     display: none;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(37,34,28,0.15);
   }
-  #ai-card::before {
-    content: '';
-    position: absolute; top: -20px; right: -20px;
-    width: 80px; height: 80px;
-    background: rgba(168,197,160,0.12);
-    border-radius: 50%;
-  }
-  #ai-card .ai-label { font-size: 10px; color: var(--green-light); letter-spacing: 1.5px; font-weight: 700; margin-bottom: 6px; }
-  #ai-card .ai-text { font-size: 13px; color: #e8f0e6; line-height: 1.7; }
-  #ai-card .ai-date { font-size: 10px; color: rgba(168,197,160,0.5); margin-top: 8px; text-align: right; }
+  #ai-card .ai-label { font-size: 10px; color: var(--green-light); letter-spacing: 2px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; }
+  #ai-card .ai-text { font-size: 13.5px; color: #ECF2EB; line-height: 1.7; font-weight: 500; }
+  #ai-card .ai-date { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 10px; text-align: right; }
 
-  /* セクションラベル */
   .section-label {
-    font-size: 11px; color: var(--text-soft);
-    letter-spacing: 1.2px; font-weight: 700;
-    margin-bottom: 12px;
-    padding-left: 4px;
+    font-size: 12px; color: var(--text-soft);
+    letter-spacing: 1.5px; font-weight: 700;
+    margin-bottom: 14px;
+    padding-left: 2px;
+    text-transform: uppercase;
   }
 
-  /* ★プランC：グラスモーフィズムカードコンポーネント */
+  /* ★モダンハイエンド・グラスモーフィズムカード */
   .item-card, #add-panel, #history-list, .rec-card {
-    background: var(--surface) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important; /* iOSサファリ対応 */
-    border: 1px solid var(--border) !important;
-    border-radius: 18px;
-    box-shadow: 0 8px 24px rgba(45, 42, 36, 0.04);
+    background: var(--surface);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(74, 69, 58, 0.05);
   }
 
+  /* アイテムカード：ぽってりとした立体感 */
   .item-card {
-    padding: 14px 16px;
-    margin-bottom: 12px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    transition: transform 0.2s, border-color 0.2s;
+    gap: 16px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .item-card.urgent {
-    background: var(--orange-pale) !important;
-    border-color: rgba(232, 168, 124, 0.4) !important;
-    box-shadow: 0 8px 24px rgba(232, 168, 124, 0.1);
-  }
-  .item-card .veg-emoji { font-size: 32px; line-height: 1; flex-shrink: 0; }
-  .item-card .item-info { flex: 1; min-width: 0; }
-  .item-card .item-name { font-size: 16px; font-weight: 700; color: var(--text); }
-  .item-card .item-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .item-card:active { transform: scale(0.99); }
   
+  /* 緊急アラート：グラデーションとシャドウで警告 */
+  .item-card.urgent {
+    background: var(--orange-pale);
+    border-color: rgba(224, 139, 82, 0.25);
+    box-shadow: 0 12px 32px rgba(224, 139, 82, 0.12);
+  }
+  
+  .item-card .veg-emoji { font-size: 36px; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06)); }
+  .item-card .item-info { flex: 1; min-width: 0; }
+  .item-card .item-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
+  .item-card .item-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+  
+  /* バッジ類のモダン化 */
   .badge-time {
     font-size: 11px; font-weight: 700;
-    padding: 3px 10px; border-radius: 12px;
-    background: rgba(107, 143, 94, 0.12); color: var(--green-dark);
+    padding: 4px 11px; border-radius: 20px;
+    background: rgba(42, 62, 44, 0.08); color: var(--green-dark);
   }
-  .badge-time.urgent { background: #FFE0C8; color: #B05020; }
+  .badge-time.urgent { background: #FCE5D3; color: #A64E19; }
   .badge-user {
     font-size: 10px; font-weight: 700;
-    padding: 3px 8px; border-radius: 10px;
+    padding: 4px 9px; border-radius: 20px;
   }
-  .badge-user.koji { background: rgba(91,130,192,0.15); color: var(--user-koji); }
-  .badge-user.hiromi { background: rgba(193,125,106,0.15); color: var(--user-hiromi); }
+  .badge-user.koji { background: rgba(74, 114, 176, 0.12); color: var(--user-koji); }
+  .badge-user.hiromi { background: rgba(181, 99, 77, 0.12); color: var(--user-hiromi); }
   
+  /* 取り出すボタンのフラット高級化 */
   .btn-remove {
-    background: var(--surface2); border: none;
-    border-radius: 12px; padding: 10px 14px;
+    background: var(--green-dark); 
+    border: none;
+    border-radius: 14px; padding: 10px 16px;
     cursor: pointer; font-size: 12px; font-weight: 700;
-    color: var(--text-mid); white-space: nowrap;
+    color: #FFFBF5; white-space: nowrap;
     transition: all 0.15s; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15);
   }
-  .btn-remove.urgent { background: var(--orange); color: #fff; }
-  .btn-remove:active { transform: scale(0.95); }
+  .btn-remove.urgent { background: var(--orange); box-shadow: 0 4px 12px rgba(224, 139, 82, 0.2); }
+  .btn-remove:active { transform: scale(0.94); opacity: 0.9; }
 
   /* 空状態 */
   #empty-state {
-    background: var(--surface2);
-    border-radius: 18px;
-    padding: 36px 20px;
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 48px 20px;
     text-align: center;
     color: var(--text-faint);
-    font-size: 14px;
+    box-shadow: 0 10px 28px rgba(74, 69, 58, 0.03);
     display: none;
   }
-  #empty-state .empty-emoji { font-size: 38px; display: block; margin-bottom: 10px; }
+  #empty-state .empty-emoji { font-size: 42px; display: block; margin-bottom: 12px; }
 
-  /* 漬け込みパネル */
+  /* 浮遊するメインアクションボタン */
   #add-btn {
-    width: 100%; background: var(--green-dark); color: var(--bg);
-    border: none; border-radius: 18px; padding: 16px;
+    width: 100%; background: var(--green-dark); color: #FFFBF5;
+    border: none; border-radius: 20px; padding: 18px;
     font-size: 16px; font-weight: 800; cursor: pointer;
-    margin-top: 8px; letter-spacing: 0.5px;
-    box-shadow: 0 6px 20px rgba(61,90,62,0.25);
-    transition: all 0.15s;
+    margin-top: 12px; letter-spacing: 0.5px;
+    box-shadow: 0 8px 24px rgba(42, 62, 44, 0.25);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  #add-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(61,90,62,0.15); }
+  #add-btn:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15); }
   
-  #add-panel {
-    padding: 18px; margin-top: 10px;
-    display: none;
-  }
-  #add-panel .panel-title { font-size: 14px; font-weight: 700; color: var(--text-mid); margin-bottom: 16px; }
-  .veg-category { margin-bottom: 16px; }
+  #add-panel { padding: 20px; margin-top: 12px; }
+  #add-panel .panel-title { font-size: 15px; font-weight: 700; color: var(--text-mid); margin-bottom: 18px; }
+  .veg-category { margin-bottom: 18px; }
   .veg-category .cat-label {
     font-size: 10px; color: var(--text-faint);
-    letter-spacing: 1px; font-weight: 700; margin-bottom: 10px;
+    letter-spacing: 1.5px; font-weight: 700; margin-bottom: 10px;
   }
   .veg-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  
+  /* 素材セレクトボタン */
   .veg-btn {
-    background: var(--surface2); border: none;
-    border-radius: 14px; padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.5); 
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 16px; padding: 11px;
     cursor: pointer; text-align: center;
-    transition: all 0.15s; min-width: 54px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); flex: 1 1 calc(25% - 8px);
+    max-width: calc(25% - 6px); box-shadow: 0 4px 10px rgba(0,0,0,0.02);
   }
-  .veg-btn .v-emoji { font-size: 24px; line-height: 1; display: block; }
-  .veg-btn .v-name { font-size: 9px; color: var(--text-soft); margin-top: 4px; display: block; }
+  .veg-btn .v-emoji { font-size: 26px; line-height: 1; display: block; }
+  .veg-btn .v-name { font-size: 10px; color: var(--text-soft); font-weight: 600; margin-top: 5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .veg-btn.selected {
     background: var(--green-dark);
+    border-color: var(--green-dark);
     transform: scale(1.08);
-    box-shadow: 0 4px 14px rgba(61,90,62,0.3);
+    box-shadow: 0 6px 16px rgba(42, 62, 44, 0.25);
   }
-  .veg-btn.selected .v-name { color: var(--green-light); }
-  .veg-btn.selected .v-emoji { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); }
+  .veg-btn.selected .v-name { color: var(--green-light); font-weight: 700; }
 
   #selected-info {
-    background: var(--green-pale); border-radius: 12px;
-    padding: 12px 14px; margin-top: 6px;
-    font-size: 13px; color: var(--green-dark); font-weight: 600;
-    display: none;
-    border: 1px solid rgba(107, 143, 94, 0.15);
+    background: var(--green-pale); border-radius: 14px;
+    padding: 14px; margin-top: 10px;
+    font-size: 13.5px; color: var(--green-dark); font-weight: 700;
+    display: none; text-align: center;
   }
-  .panel-btns { display: flex; gap: 10px; margin-top: 18px; }
+  .panel-btns { display: flex; gap: 12px; margin-top: 20px; }
   .btn-cancel {
-    flex: 1; background: var(--surface2); border: none;
-    border-radius: 14px; padding: 13px;
+    flex: 1; background: rgba(0,0,0,0.05); border: none;
+    border-radius: 16px; padding: 14px;
     cursor: pointer; font-size: 14px; color: var(--text-soft); font-weight: 700;
-    transition: background 0.15s;
   }
-  .btn-cancel:active { background: var(--border); }
   .btn-confirm {
     flex: 2; background: var(--green-dark); border: none;
-    border-radius: 14px; padding: 13px;
+    border-radius: 16px; padding: 14px;
     cursor: pointer; font-size: 14px; color: #fff; font-weight: 800;
-    transition: all 0.15s;
+    box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15);
   }
-  .btn-confirm:disabled { background: #C8C2B5 !important; cursor: not-allowed; opacity: 0.6; }
-  .btn-confirm:not(:disabled):active { transform: scale(0.97); }
+  .btn-confirm:disabled { background: #C5BEB0 !important; cursor: not-allowed; opacity: 0.5; box-shadow: none; }
 
   /* フィードバック画面 */
-  #feedback-screen { display: none; text-align: center; padding-top: 24px; }
-  #feedback-screen .fb-emoji { font-size: 72px; margin-bottom: 12px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1)); }
-  #feedback-screen .fb-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
-  #feedback-screen .fb-sub { font-size: 13px; color: var(--text-soft); margin-bottom: 32px; }
+  #feedback-screen { display: none; text-align: center; padding-top: 32px; }
+  #feedback-screen .fb-emoji { font-size: 80px; margin-bottom: 16px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.08)); }
+  #feedback-screen .fb-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+  #feedback-screen .fb-sub { font-size: 13.5px; color: var(--text-soft); margin-bottom: 40px; }
   .fb-btn {
-    display: block; width: 100%; border: none; border-radius: 16px;
-    padding: 16px; font-size: 15px; font-weight: 800;
-    cursor: pointer; margin-bottom: 12px; color: #fff;
-    transition: all 0.15s;
+    display: block; width: 100%; border: none; border-radius: 18px;
+    padding: 18px; font-size: 15px; font-weight: 800;
+    cursor: pointer; margin-bottom: 14px; color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   }
-  .fb-btn:active { transform: scale(0.97); }
-  .fb-btn.perfect { background: var(--green-dark); box-shadow: 0 4px 16px rgba(61,90,62,0.25); }
+  .fb-btn.perfect { background: var(--green-dark); box-shadow: 0 6px 20px rgba(42,62,44,0.25); }
   .fb-btn.light { background: var(--green-mid); }
   .fb-btn.heavy { background: var(--red-soft); }
 
   /* レコメンド画面 */
   #recommend-screen { display: none; padding-top: 4px; }
-  #recommend-screen .rec-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 18px; }
+  #recommend-screen .rec-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 20px; }
   .rec-card {
-    padding: 14px 16px;
-    margin-bottom: 12px; display: flex;
-    align-items: center; gap: 14px; cursor: pointer;
-    transition: border-color 0.15s, transform 0.15s;
+    padding: 16px; margin-bottom: 14px; display: flex;
+    align-items: center; gap: 16px;
   }
-  .rec-card:active { transform: scale(0.98); }
-  .rec-card .rc-emoji { font-size: 38px; flex-shrink: 0; }
+  .rec-card .rc-emoji { font-size: 40px; flex-shrink: 0; }
   .rec-card .rc-info { flex: 1; }
-  .rec-card .rc-name { font-size: 16px; font-weight: 700; color: var(--text); }
-  .rec-card .rc-reason { font-size: 12px; color: var(--text-soft); margin-top: 3px; line-height: 1.4; }
+  .rec-card .rc-name { font-size: 17px; font-weight: 700; color: var(--text); }
+  .rec-card .rc-reason { font-size: 13px; color: var(--text-soft); margin-top: 4px; line-height: 1.4; }
   .rec-tag {
     font-size: 10px; font-weight: 700;
-    padding: 4px 10px; border-radius: 10px; flex-shrink: 0;
+    padding: 5px 11px; border-radius: 20px; flex-shrink: 0;
   }
-  .rec-tag.season { background: rgba(107, 143, 94, 0.15); color: var(--green-dark); }
-  .rec-tag.unique { background: #EEE9F5; color: #7A5A9E; }
-  .rec-tag.twist { background: #F5ECE9; color: var(--red-soft); }
-  .btn-back {
-    width: 100%; background: var(--green-dark); color: var(--bg);
-    border: none; border-radius: 16px; padding: 15px;
-    font-size: 14px; font-weight: 800; cursor: pointer;
-    margin-top: 8px; transition: all 0.15s;
-  }
-  .btn-back:active { transform: scale(0.98); }
+  .rec-tag.season { background: rgba(85, 114, 77, 0.12); color: var(--green-dark); }
+  .rec-tag.unique { background: #EFE9F5; color: #6A4A93; }
+  .rec-tag.twist { background: #F5EAE6; color: var(--red-soft); }
 
   /* 履歴画面 */
   #history-screen { display: none; padding-top: 4px; }
-  #history-list { overflow: hidden; }
+  #history-list { overflow: hidden; padding: 4px 0; }
   .hist-item {
-    padding: 14px 16px; display: flex; align-items: center;
-    gap: 14px; border-bottom: 1px solid rgba(224, 216, 200, 0.3);
+    padding: 16px; display: flex; align-items: center;
+    gap: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   }
   .hist-item:last-child { border-bottom: none; }
-  .hist-emoji { font-size: 26px; flex-shrink: 0; }
+  .hist-emoji { font-size: 28px; flex-shrink: 0; }
   .hist-info { flex: 1; }
-  .hist-name { font-size: 15px; font-weight: 700; color: var(--text); }
-  .hist-meta { font-size: 11px; color: var(--text-faint); margin-top: 3px; }
-  .hist-fb { font-size: 22px; flex-shrink: 0; }
-  #history-empty { text-align: center; padding: 40px; color: var(--text-faint); font-size: 14px; display: none; }
-
-  /* ローディング */
-  .loading-spinner {
-    display: inline-block; width: 16px; height: 16px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff; border-radius: 50%;
-    animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px;
-  }
+  .hist-name { font-size: 16px; font-weight: 700; color: var(--text); }
+  .hist-meta { font-size: 12px; color: var(--text-faint); margin-top: 4px; }
+  .hist-fb { font-size: 24px; flex-shrink: 0; }
+  #history-empty { text-align: center; padding: 48px; color: var(--text-faint); font-size: 14px; display: none; }
 
   /* トースト */
   #toast {
-    position: fixed; top: calc(76px + env(safe-area-inset-top)); left: 50%;
+    position: fixed; top: calc(84px + env(safe-area-inset-top)); left: 50%;
     transform: translateX(-50%) translateY(-10px);
-    background: var(--green-dark); color: #fff;
-    padding: 12px 26px; border-radius: 24px;
+    background: rgba(37, 34, 28, 0.95);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: #FFFBF5; padding: 14px 28px; border-radius: 30px;
     font-size: 14px; font-weight: 700;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
     z-index: 200; opacity: 0;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap; pointer-events: none;
   }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* エラー */
   #error-bar {
     background: #FDECEA; border: 1px solid #F5C6C0;
-    border-radius: 14px; padding: 12px 14px;
-    font-size: 12px; color: #B04040; margin-bottom: 14px;
-    display: none;
+    border-radius: 16px; padding: 14px; font-size: 12px; color: #B04040; margin-bottom: 16px; display: none;
+  }
+  .loading-spinner {
+    display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px;
   }
 
-  /* ★プランC：極上すりガラスボトムナビ */
+  /* ★超高級すりガラスボトムナビ（シアターブレンド） */
   #bottom-nav {
-    position: fixed; 
-    bottom: 0;
-    width: 100%; 
-    max-width: 420px;
-    background: var(--nav-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px); /* iOS対応 */
-    display: flex;
-    border-top: 1px solid rgba(107, 143, 94, 0.25);
-    z-index: 100;
-    padding-bottom: env(safe-area-inset-bottom); /* iPhoneの下部バーの余白を自動確保 */
+    position: fixed; bottom: 0; width: 100%; max-width: 420px;
+    background: rgba(37, 34, 28, 0.88);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    display: flex; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.05);
   }
   .nav-btn {
-    flex: 1; background: none; border: none;
-    padding: 14px 8px 10px; cursor: pointer;
-    display: flex; flex-direction: column;
-    align-items: center; gap: 4px;
-    position: relative; transition: opacity 0.15s;
+    flex: 1; background: none; border: none; padding: 16px 8px 12px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative;
   }
-  .nav-btn:active { opacity: 0.6; }
-  .nav-emoji { font-size: 22px; line-height: 1; transition: transform 0.2s; }
-  .nav-btn.active .nav-emoji { transform: scale(1.1); }
-  .nav-label {
-    font-size: 10px; color: rgba(168,197,160,0.5);
-    letter-spacing: 0.5px; font-weight: 600;
-  }
+  .nav-emoji { font-size: 22px; opacity: 0.4; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+  .nav-btn.active .nav-emoji { opacity: 1; transform: translateY(-2px) scale(1.1); }
+  .nav-label { font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; font-weight: 600; transition: color 0.25s; }
   .nav-btn.active .nav-label { color: var(--green-light); font-weight: 700; }
   .nav-active-bar {
-    position: absolute; bottom: calc(env(safe-area-inset-bottom) + 2px);
-    width: 20px; height: 3px;
-    background: var(--green-light); border-radius: 2px;
-    display: none;
-    box-shadow: 0 0 8px var(--green-light);
+    position: absolute; bottom: calc(env(safe-area-inset-bottom) + 3px);
+    width: 16px; height: 3px; background: var(--green-light); border-radius: 2px;
+    display: none; box-shadow: 0 0 10px var(--green-light);
   }
   .nav-btn.active .nav-active-bar { display: block; }
   .nav-badge {
-    position: absolute; top: 8px; right: calc(50% - 22px);
-    background: var(--orange); color: #fff;
-    font-size: 9px; font-weight: 800;
-    width: 16px; height: 16px; border-radius: 50%;
-    display: none; align-items: center; justify-content: center;
-    box-shadow: 0 2px 6px rgba(232, 168, 124, 0.4);
+    position: absolute; top: 10px; right: calc(50% - 24px);
+    background: var(--orange); color: #fff; font-size: 9px; font-weight: 800;
+    width: 16px; height: 16px; border-radius: 50%; display: none; align-items: center; justify-content: center;
+    box-shadow: 0 3px 8px rgba(224, 139, 82, 0.4);
   }
   .nav-badge.show { display: flex; }
 
@@ -445,10 +424,17 @@
 </style>
 </head>
 <body>
+
+<div class="aurora-bg-container">
+  <div class="aurora-blob blob-gold"></div>
+  <div class="aurora-blob blob-green"></div>
+  <div class="aurora-blob blob-clay"></div>
+</div>
+
 <div id="app">
   <div id="header">
     <div>
-      <div class="logo-sub">NUKALOG</div>
+      <div class="logo-sub">NUKALOG LAB</div>
       <div class="logo-main">🪣 ぬかろぐ</div>
     </div>
     <div id="user-toggle">
@@ -461,7 +447,7 @@
     <div id="error-bar"></div>
 
     <div id="ai-card">
-      <div class="ai-label">🤖 ぬか床より</div>
+      <div class="ai-label">🤖 ぬか床の機嫌</div>
       <div class="ai-text" id="ai-text"></div>
       <div class="ai-date" id="ai-date"></div>
     </div>
@@ -470,7 +456,7 @@
       <div class="section-label" id="items-label">糠床の中身</div>
       <div id="items-list"></div>
       <div id="empty-state"><span class="empty-emoji">🥒</span>何も漬かっていません</div>
-      <button id="add-btn">＋ 漬け込む</button>
+      <button id="add-btn">＋ 新たな素材を漬け込む</button>
       <div id="add-panel">
         <div class="panel-title">何を漬けますか？</div>
         <div id="veg-categories"></div>
@@ -533,9 +519,6 @@
 // ============================================================
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwQoaHMeuDsAjB-laMpiT6uXD8f43K2sXF_9MGx-DftPwzBvYmdUfWinB-B9-56v_DN/exec';
 
-// ============================================================
-// 野菜マスタ
-// ============================================================
 const VEGETABLES = [
   { emoji:'🥒', name:'きゅうり',    hours:18, category:'定番' },
   { emoji:'🍆', name:'なす',       hours:36, category:'定番' },
@@ -556,29 +539,20 @@ const VEGETABLES = [
 ];
 
 const CATEGORIES = ['定番','季節','珍しい','変化球'];
-
 const USERS = [
-  { id:'koji',   name:'こうじ',  color:'#5B82C0', cls:'koji'   },
-  { id:'hiromi', name:'ひろみ',  color:'#C17D6A', cls:'hiromi' },
+  { id:'koji',   name:'こうじ',  color:'#4A72B0', cls:'koji'   },
+  { id:'hiromi', name:'ひろみ',  color:'#B5634D', cls:'hiromi' },
 ];
 
-// ============================================================
-// 状態
-// ============================================================
 let currentUser = USERS[0];
-let items = [];        // 漬け込み中
-let history = [];      // 履歴
+let items = [];
+let history = [];
 let selectedVeg = null;
 let pendingRemove = null;
 let currentScreen = 'home';
 
-// ============================================================
-// GAS API
-// ============================================================
 async function gasCall(params) {
-  if (!GAS_URL || GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') {
-    return mockApi(params);
-  }
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') return mockApi(params);
   try {
     const url = new URL(GAS_URL);
     Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
@@ -592,9 +566,7 @@ async function gasCall(params) {
 }
 
 async function gasPost(action, body) {
-  if (!GAS_URL || GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') {
-    return mockApi({ action, ...body });
-  }
+  if (!GAS_URL || GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') return mockApi({ action, ...body });
   try {
     const url = new URL(GAS_URL);
     url.searchParams.set('action', action);
@@ -608,22 +580,14 @@ async function gasPost(action, body) {
   }
 }
 
-// ============================================================
-// モックデータ（GAS未設定時）
-// ============================================================
 let mockItems = [
-  { id:'m1', vegEmoji:'🥒', vegName:'きゅうり', hours:18, adjustedHours:18,
-    addedAt: new Date(Date.now()-14*3600000).toISOString(), userId:'koji', userName:'こうじ' },
-  { id:'m2', vegEmoji:'🍆', vegName:'なす', hours:36, adjustedHours:36,
-    addedAt: new Date(Date.now()-20*3600000).toISOString(), userId:'hiromi', userName:'ひろみ' },
-  { id:'m3', vegEmoji:'🥚', vegName:'ゆで卵', hours:24, adjustedHours:24,
-    addedAt: new Date(Date.now()-22*3600000).toISOString(), userId:'hiromi', userName:'ひろみ' },
+  { id:'m1', vegEmoji:'🥒', vegName:'きゅうり', hours:18, adjustedHours:18, addedAt: new Date(Date.now()-14*3600000).toISOString(), userId:'koji', userName:'こうじ' },
+  { id:'m2', vegEmoji:'🍆', vegName:'なす', hours:36, adjustedHours:36, addedAt: new Date(Date.now()-20*3600000).toISOString(), userId:'hiromi', userName:'ひろみ' },
+  { id:'m3', vegEmoji:'🥚', vegName:'ゆで卵', hours:24, adjustedHours:24, addedAt: new Date(Date.now()-22*3600000).toISOString(), userId:'hiromi', userName:'ひろみ' },
 ];
 let mockHistory = [
-  { id:'h1', vegEmoji:'🥕', vegName:'にんじん', addedAt: new Date(Date.now()-4*86400000).toISOString(),
-    removedAt: new Date(Date.now()-2*86400000).toISOString(), userId:'koji', userName:'こうじ', feedback:'perfect' },
-  { id:'h2', vegEmoji:'🧅', vegName:'かぶ', addedAt: new Date(Date.now()-7*86400000).toISOString(),
-    removedAt: new Date(Date.now()-5*86400000).toISOString(), userId:'hiromi', userName:'ひろみ', feedback:'light' },
+  { id:'h1', vegEmoji:'🥕', vegName:'にんじん', addedAt: new Date(Date.now()-4*86400000).toISOString(), removedAt: new Date(Date.now()-2*86400000).toISOString(), userId:'koji', userName:'こうじ', feedback:'perfect' },
+  { id:'h2', vegEmoji:'🧅', vegName:'かぶ', addedAt: new Date(Date.now()-7*86400000).toISOString(), removedAt: new Date(Date.now()-5*86400000).toISOString(), userId:'hiromi', userName:'ひろみ', feedback:'light' },
 ];
 let mockAiMsg = {
   text: 'こうじさんはきゅうりをよく漬けてますね。ひろみさんはゆで卵がお好きみたい。かぶもたまに漬けると糠床が喜びますよ🥬',
@@ -636,32 +600,18 @@ function mockApi(params) {
   if (action === 'getHistory') return Promise.resolve({ ok:true, data: mockHistory });
   if (action === 'getAiMessage') return Promise.resolve({ ok:true, data: mockAiMsg });
   if (action === 'addItem') {
-    const item = {
-      id: 'mock_' + Date.now(),
-      vegEmoji: params.vegEmoji, vegName: params.vegName,
-      hours: params.hours, adjustedHours: params.hours,
-      addedAt: new Date().toISOString(),
-      userId: params.userId, userName: params.userName
-    };
+    const item = { id: 'mock_' + Date.now(), vegEmoji: params.vegEmoji, vegName: params.vegName, hours: params.hours, adjustedHours: params.hours, addedAt: new Date().toISOString(), userId: params.userId, userName: params.userName };
     mockItems.push(item);
     return Promise.resolve({ ok:true, data: item });
   }
   if (action === 'removeItem') {
     const item = mockItems.find(i => i.id === params.id);
-    if (item) {
-      item.removedAt = new Date().toISOString();
-      item.feedback = params.feedback || '';
-      mockHistory.unshift(item);
-      mockItems = mockItems.filter(i => i.id !== params.id);
-    }
+    if (item) { item.removedAt = new Date().toISOString(); item.feedback = params.feedback || ''; mockHistory.unshift(item); mockItems = mockItems.filter(i => i.id !== params.id); }
     return Promise.resolve({ ok:true });
   }
   return Promise.resolve({ ok:true });
 }
 
-// ============================================================
-// データ読み込み
-// ============================================================
 async function loadAll() {
   const [itemsRes, histRes, aiRes] = await Promise.all([
     gasCall({ action:'getItems' }),
@@ -679,13 +629,10 @@ async function loadAll() {
   renderHistory();
 }
 
-// ============================================================
-// 時間フォーマット
-// ============================================================
 function formatRemaining(addedAtStr, adjustedHours) {
   const readyAt = new Date(new Date(addedAtStr).getTime() + adjustedHours * 3600000);
   const diff = readyAt - Date.now();
-  if (diff <= 0) return { label:'取り出せます！', urgent:true };
+  if (diff <= 0) return { label:'食べ頃です！', urgent:true };
   const h = Math.floor(diff / 3600000);
   const m = Math.floor((diff % 3600000) / 60000);
   if (h >= 24) return { label:`約${Math.ceil(h/24)}日後`, urgent:false };
@@ -703,28 +650,19 @@ function relativeDate(isoStr) {
 
 const FB_EMOJI = { perfect:'😋', light:'😅', heavy:'😬', '':'—' };
 
-// ============================================================
-// ★ プランC：ぬか床バイタル（背景脈動速度）の動的同期ロジック
-// ============================================================
+// ★ ぬか床バイタル同期
 function updateAuroraVital() {
-  // ぬか床内の活動量に応じてオーロラの蠢く速度を変える（数値が小さいほど激しく蠢く）
-  let baseSpeed = 32; 
-
+  let baseSpeed = 24; 
   const urgentCount = items.filter(item => {
     const readyAt = new Date(new Date(item.addedAt).getTime() + item.adjustedHours * 3600000);
     return (readyAt - Date.now()) <= 0;
   }).length;
 
-  // 通常アイテム1つにつき2秒、食べ頃放置アイテム1つにつき5秒、活動速度が加速（エナジーアップ）
-  let speedScore = baseSpeed - (items.length * 2) - (urgentCount * 5);
-  if (speedScore < 8) speedScore = 8; // iPhoneへの描画負荷限界値を考慮し最高速度をロック
-
+  let speedScore = baseSpeed - (items.length * 1.5) - (urgentCount * 4);
+  if (speedScore < 6) speedScore = 6; 
   document.documentElement.style.setProperty('--aurora-speed', `${speedScore}s`);
 }
 
-// ============================================================
-// レンダリング
-// ============================================================
 function renderItems() {
   const list = document.getElementById('items-list');
   const empty = document.getElementById('empty-state');
@@ -764,7 +702,7 @@ function renderItems() {
 
   label.textContent = `糠床の中身 · ${items.length}品`;
   updateUrgentBadge(urgentCount);
-  updateAuroraVital(); // バイタル速度を再計算
+  updateAuroraVital();
 }
 
 function renderHistory() {
@@ -834,9 +772,6 @@ function renderRecommend() {
   });
 }
 
-// ============================================================
-// 野菜グリッド生成
-// ============================================================
 function buildVegGrid() {
   const container = document.getElementById('veg-categories');
   container.innerHTML = '';
@@ -874,9 +809,6 @@ function selectVeg(idx) {
   document.getElementById('confirm-btn').disabled = false;
 }
 
-// ============================================================
-// 漬け込み
-// ============================================================
 document.getElementById('add-btn').addEventListener('click', () => {
   document.getElementById('add-btn').style.display = 'none';
   document.getElementById('add-panel').style.display = 'block';
@@ -901,9 +833,7 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
   btn.innerHTML = '<span class="loading-spinner"></span>登録中…';
 
   const res = await gasPost('addItem', {
-    vegEmoji: v.emoji, vegName: v.name,
-    hours: v.hours, adjustedHours: v.hours,
-    userId: currentUser.id, userName: currentUser.name
+    vegEmoji: v.emoji, vegName: v.name, hours: v.hours, adjustedHours: v.hours, userId: currentUser.id, userName: currentUser.name
   });
 
   if (res?.ok) {
@@ -918,9 +848,6 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
   btn.innerHTML = '漬け込む 🥒';
 });
 
-// ============================================================
-// 取り出し → フィードバック
-// ============================================================
 function startRemove(id) {
   const item = items.find(i => i.id === id);
   if (!item) return;
@@ -946,9 +873,6 @@ async function submitFeedback(result) {
   }
 }
 
-// ============================================================
-// 画面切替
-// ============================================================
 function showScreen(name) {
   currentScreen = name;
   ['home','feedback','recommend','history'].forEach(s => {
@@ -967,19 +891,14 @@ function showScreen(name) {
   window.scrollTo(0, 0);
 }
 
-// ============================================================
-// ユーザー切替
-// ============================================================
 document.getElementById('user-toggle').addEventListener('click', () => {
   const idx = USERS.findIndex(u => u.id === currentUser.id);
   currentUser = USERS[(idx + 1) % USERS.length];
   document.getElementById('user-name').textContent = currentUser.name;
   document.getElementById('user-dot').style.background = currentUser.color;
+  document.getElementById('user-dot').style.boxShadow = `0 0 6px ${currentUser.color}`;
 });
 
-// ============================================================
-// バッジ・トースト・エラー
-// ============================================================
 function updateUrgentBadge(n) {
   const badge = document.getElementById('urgent-badge');
   badge.textContent = n;
@@ -993,7 +912,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// iPhoneで全画面表示時に邪魔にならないようエラーバーを自動非表示
 function showError(msg) {
   const bar = document.getElementById('error-bar');
   bar.textContent = '⚠ ' + msg;
@@ -1001,16 +919,10 @@ function showError(msg) {
   setTimeout(() => bar.style.display = 'none', 5000);
 }
 
-// ============================================================
-// 定期更新（1分ごとに残り時間を再描画）
-// ============================================================
 setInterval(() => {
   if (currentScreen === 'home') renderItems();
 }, 60000);
 
-// ============================================================
-// 起動
-// ============================================================
 showScreen('home');
 loadAll();
 </script>
