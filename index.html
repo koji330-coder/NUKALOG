@@ -506,7 +506,7 @@
       <div class="nav-label">糠床</div>
       <div class="nav-active-bar"></div>
     </button>
-    <button class="nav-btn" onclick="showScreen('recommend')" id="nav-recommend">
+    <button class="nav-btn" onclick="showScreen('recommend');renderRecommend();" id="nav-recommend">
       <div class="nav-emoji">💡</div>
       <div class="nav-label">提案</div>
       <div class="nav-active-bar"></div>
@@ -1007,7 +1007,8 @@ function showScreen(name) {
     const btn = document.getElementById('nav-' + s);
     if (btn) btn.classList.toggle('active', s === name);
   });
-  if (name === 'recommend') renderRecommend();
+  // ↓ この行を削除
+  // if (name === 'recommend') renderRecommend();
   if (name === 'history')   renderHistory();
   if (name === 'home') {
     document.getElementById('add-btn').style.display = 'block';
