@@ -434,18 +434,6 @@ async function gasCall(params) {
   } catch(e) { showError('通信エラー: ' + e.message); return null; }
 }
 
-async function gasPost(action, body) {
-  if (!GAS_URL) return mockApi({ action, ...body });
-  try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST', mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, body })
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return await res.json();
-  } catch(e) { showError('通信エラー: ' + e.message); return null; }
-}
 
 // ============================================================
 // モック（GAS_URL未設定時のフォールバック）
@@ -775,10 +763,11 @@ async function quickPickleFromAi(emoji, name, aiHours, tag) {
   const hoursLabel = hours >= 24 ? `約${hours/24}日` : `約${hours}時間`;
   if (!confirm(`「${currentUser.name}」として、${emoji} ${name} を漬け込みますか？\n目安: ${hoursLabel}（冷蔵庫）`)) return;
   showToast(`ぬか床に ${name} を押し込み中...`);
-  const res = await gasPost('addItem', {
+  const res = await gasCall({
+    action: 'addItem',
     vegEmoji: emoji, vegName: name, hours, adjustedHours: hours,
     userId: currentUser.id, userName: currentUser.name,
-    vegCategory: tag || '' // ★ タグをカテゴリとして保存
+    vegCategory: tag || ''
   });
   if (res?.ok) {
     showToast(`${emoji} ${name} を漬け込みました！`);
@@ -853,9 +842,11 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
   const btn = document.getElementById('confirm-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="loading-spinner"></span>登録中…';
-  const res = await gasPost('addItem', {
+  const res = await gasCall({
+    action: 'addItem',
     vegEmoji: v.emoji, vegName: v.name, hours: v.hours, adjustedHours: v.hours,
-    userId: currentUser.id, userName: currentUser.name
+    userId: currentUser.id, userName: currentUser.name,
+    vegCategory: v.category || ''
   });
   if (res?.ok) { await loadAll(); closeAddPanel(); showToast(`${v.emoji} ${v.name}を漬け込みました！`); }
   btn.disabled = false;
@@ -878,16 +869,17 @@ function startRemove(id) {
 async function submitFeedback(result) {
   if (!pendingRemove) return;
   const comment = document.getElementById('feedback-comment').value.trim();
-  const res = await gasPost('removeItem', {
+  const res = await gasCall({
+    action: 'removeItem',
     id: pendingRemove.id,
     feedback: result,
-    comment   // ★ コメントをGASへ送信
+    comment
   });
   if (res?.ok) {
     await loadAll();
     pendingRemove = null;
     showScreen('recommend');
-    loadLastRecommend(); // フィードバック後も前回キャッシュを表示
+    loadLastRecommend();
   }
 }
 
