@@ -390,7 +390,7 @@
       <div class="nav-label">糠床</div>
       <div class="nav-active-bar"></div>
     </button>
-    <button class="nav-btn" onclick="showScreen('recommend'); loadLastRecommend();" id="nav-recommend">
+    <button class="nav-btn" onclick="showScreen('recommend')" id="nav-recommend">
       <div class="nav-emoji">💡</div>
       <div class="nav-label">提案</div>
       <div class="nav-active-bar"></div>
@@ -416,12 +416,13 @@ const USERS = [
 let currentUser = USERS[0];
 let items = [];
 let history = [];
+let lastRecommend = null; // ★ 提案データをメモリに保持
 let selectedVeg = null;
 let pendingRemove = null;
 let currentScreen = 'home';
 
 // ============================================================
-// 通信
+// 通信（GETのみ）
 // ============================================================
 async function gasCall(params) {
   if (!GAS_URL) return mockApi(params);
@@ -433,7 +434,6 @@ async function gasCall(params) {
     return await res.json();
   } catch(e) { showError('通信エラー: ' + e.message); return null; }
 }
-
 
 // ============================================================
 // モック（GAS_URL未設定時のフォールバック）
@@ -448,11 +448,11 @@ function mockApi(params) {
   if (action === 'getHistory')  return Promise.resolve({ ok:true, data: [] });
   if (action === 'getAiMessage') return Promise.resolve({ ok:true, data: { text: 'モック稼働中' } });
   if (action === 'getLastRecommend') return Promise.resolve({ ok:true, data: {
-    items: [{ emoji:'🍌', name:'バナナ', reason:'魔術師の直感。トロトロ甘酸っぱくなります', tag:'変化球', forUser:'both' }],
+    items: [{ emoji:'🍌', name:'バナナ', reason:'魔術師の直感', tag:'変化球', forUser:'both', hours:24 }],
     generatedAt: '前回'
   }});
   if (action === 'generateRecommend') return Promise.resolve({ ok:true, data: {
-    items: [{ emoji:'🍌', name:'バナナ(新)', reason:'新提案です', tag:'変化球', forUser:'both' }],
+    items: [{ emoji:'🍌', name:'バナナ(新)', reason:'新提案です', tag:'変化球', forUser:'both', hours:24 }],
     generatedAt: new Date().toLocaleDateString('ja-JP')
   }});
   if (action === 'addItem') return Promise.resolve({ ok:true, data:{ id:'m1', vegEmoji:'🥒', vegName:'きゅうり', hours:18, adjustedHours:18, addedAt:new Date().toISOString(), userId:'koji', userName:'こうじ' }});
@@ -460,14 +460,15 @@ function mockApi(params) {
 }
 
 // ============================================================
-// 初期ロード
+// 初期ロード — 起動時に全データを1回だけ取得
 // ============================================================
 async function loadAll() {
-  const [vegRes, itemsRes, histRes, aiRes] = await Promise.all([
+  const [vegRes, itemsRes, histRes, aiRes, recRes] = await Promise.all([
     gasCall({ action:'getVegMaster' }),
     gasCall({ action:'getItems' }),
     gasCall({ action:'getHistory' }),
     gasCall({ action:'getAiMessage' }),
+    gasCall({ action:'getLastRecommend' }), // ★ 起動時に提案も取得
   ]);
 
   if (vegRes?.ok && Array.isArray(vegRes.data)) {
@@ -477,8 +478,10 @@ async function loadAll() {
       category: v.category || '定番'
     }));
   }
-  if (itemsRes?.ok) items = itemsRes.data || [];
-  if (histRes?.ok)  history = histRes.data || [];
+  if (itemsRes?.ok) items    = itemsRes.data || [];
+  if (histRes?.ok)  history  = histRes.data  || [];
+  if (recRes?.ok && recRes.data) lastRecommend = recRes.data; // ★ メモリに保持
+
   if (aiRes?.ok && aiRes.data) {
     const d = aiRes.data;
     if (d.text) {
@@ -490,6 +493,8 @@ async function loadAll() {
   }
   renderItems();
   renderHistory();
+  // ★ 提案タブが開いていたらそのまま再描画（画面遷移不要）
+  if (currentScreen === 'recommend') renderCachedRecommend();
 }
 
 // ============================================================
@@ -633,27 +638,15 @@ function renderHistory() {
 }
 
 // ============================================================
-// 提案タブ — ★ キャッシュ優先表示 + 生成ボタン
+// 提案タブ描画 — ローカルの lastRecommend をそのまま描画（GAS不要）
 // ============================================================
-
-/**
- * 提案タブを開いたとき: getLastRecommend で前回キャッシュを表示するだけ
- * GAS側に getLastRecommend アクションが必要（rec_cache シートから取得）
- */
-async function loadLastRecommend() {
+function renderCachedRecommend() {
   const titleEl = document.getElementById('rec-list-title');
   const countEl = document.getElementById('rec-list-count');
   const dateEl  = document.getElementById('rec-cache-date');
   const list    = document.getElementById('rec-list');
 
-  titleEl.textContent = '前回の提案';
-  list.innerHTML = `<div style="text-align:center;padding:30px 0;color:var(--text-soft);font-size:13px;">
-    <div style="font-size:28px;margin-bottom:8px;opacity:0.5;">🥒</div>前回の提案を確認中...
-  </div>`;
-
-  const res = await gasCall({ action: 'getLastRecommend' });
-
-  if (!res?.ok || !res.data?.items?.length) {
+  if (!lastRecommend || !lastRecommend.items?.length) {
     list.innerHTML = '';
     list.appendChild(buildRecEmpty());
     titleEl.textContent = '提案なし';
@@ -663,11 +656,13 @@ async function loadLastRecommend() {
   }
 
   titleEl.textContent = '前回の提案';
-  countEl.textContent = `${res.data.items.length}件`;
-  dateEl.textContent  = res.data.generatedAt ? `生成: ${res.data.generatedAt}` : '';
-
-  renderRecList(res.data.items);
+  countEl.textContent = `${lastRecommend.items.length}件`;
+  dateEl.textContent  = lastRecommend.generatedAt ? `生成: ${lastRecommend.generatedAt}` : '';
+  renderRecList(lastRecommend.items);
 }
+
+// ★ 旧loadLastRecommend は廃止。互換のため名前だけ残す
+function loadLastRecommend() { renderCachedRecommend(); }
 
 /**
  * 「新提案をねだる」ボタン: generateRecommend を POST して洗い替え
@@ -705,6 +700,9 @@ async function triggerGenerateRecommend() {
   titleEl.textContent = '最新の提案';
   countEl.textContent = `${res.data.items.length}件`;
   dateEl.textContent  = res.data.generatedAt ? `生成: ${res.data.generatedAt}` : '';
+
+  // ★ メモリを更新しておく（タブを開き直してもローカルから即描画できる）
+  lastRecommend = res.data;
 
   renderRecList(res.data.items);
   if (userRequest) input.value = '';
@@ -769,11 +767,9 @@ async function quickPickleFromAi(emoji, name, aiHours, tag) {
     userId: currentUser.id, userName: currentUser.name,
     vegCategory: tag || ''
   });
-  if (res?.ok) {
+  if (res?.ok && res.data) {
+    items = [res.data, ...items]; // ★ ローカルに即追加
     showToast(`${emoji} ${name} を漬け込みました！`);
-    const fresh = await gasCall({ action:'getItems' });
-    if (fresh?.ok) items = fresh.data || [];
-    await loadAll();
     showScreen('home');
   } else {
     showError('漬け込みに失敗しました。');
@@ -848,7 +844,12 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
     userId: currentUser.id, userName: currentUser.name,
     vegCategory: v.category || ''
   });
-  if (res?.ok) { await loadAll(); closeAddPanel(); showToast(`${v.emoji} ${v.name}を漬け込みました！`); }
+  if (res?.ok && res.data) {
+    items = [res.data, ...items]; // ★ ローカルに即追加
+    closeAddPanel();
+    showToast(`${v.emoji} ${v.name}を漬け込みました！`);
+    renderItems();
+  }
   btn.disabled = false;
   btn.innerHTML = '漬け込む 🥒';
 });
@@ -876,10 +877,16 @@ async function submitFeedback(result) {
     comment
   });
   if (res?.ok) {
-    await loadAll();
+    // ★ ローカルから即削除・履歴に即追加（GAS再取得不要）
+    const removed = pendingRemove;
+    items   = items.filter(i => i.id !== removed.id);
+    history = [{ ...removed, removedAt: new Date().toISOString(), feedback: result, comment }, ...history];
     pendingRemove = null;
+    renderItems();
+    renderHistory();
     showScreen('recommend');
-    loadLastRecommend();
+    // 提案はキャッシュをそのまま表示（loadLastRecommend不要）
+    renderCachedRecommend();
   }
 }
 
@@ -895,7 +902,8 @@ function showScreen(name) {
     const btn = document.getElementById('nav-' + s);
     if (btn) btn.classList.toggle('active', s === name);
   });
-  if (name === 'history') renderHistory();
+  if (name === 'history')   renderHistory();
+  if (name === 'recommend') renderCachedRecommend(); // ★ GAS不要・ローカル即描画
   if (name === 'home') {
     document.getElementById('add-btn').style.display = 'block';
     document.getElementById('add-panel').style.display = 'none';
