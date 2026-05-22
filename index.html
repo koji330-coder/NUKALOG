@@ -752,7 +752,7 @@ function renderRecList(recItems) {
       <div class="rec-tag ${tagCls[tag] || 'season'}">${tag}</div>
     `;
     // E: onclick は innerHTML の後に設定
-    div.onclick = () => quickPickleFromAi(r.emoji, r.name, hours);
+    div.onclick = () => quickPickleFromAi(r.emoji, r.name, hours, r.tag);
     list.appendChild(div);
   });
 }
@@ -767,10 +767,9 @@ function buildRecEmpty() {
 
 // ============================================================
 // 即漬け（提案カードタップ）
-// F: AIが提案した hours を使う。マスタ登録不要
+// F: AIが提案した hours・tag を使う。マスタ登録不要
 // ============================================================
-async function quickPickleFromAi(emoji, name, aiHours) {
-  // マスタにあればそちら優先、なければAI提案のhours、それもなければ24h
+async function quickPickleFromAi(emoji, name, aiHours, tag) {
   const exist = VEGETABLES.find(v => v.name === name);
   const hours = exist ? exist.hours : (aiHours || 24);
   const hoursLabel = hours >= 24 ? `約${hours/24}日` : `約${hours}時間`;
@@ -778,7 +777,8 @@ async function quickPickleFromAi(emoji, name, aiHours) {
   showToast(`ぬか床に ${name} を押し込み中...`);
   const res = await gasPost('addItem', {
     vegEmoji: emoji, vegName: name, hours, adjustedHours: hours,
-    userId: currentUser.id, userName: currentUser.name
+    userId: currentUser.id, userName: currentUser.name,
+    vegCategory: tag || '' // ★ タグをカテゴリとして保存
   });
   if (res?.ok) {
     showToast(`${emoji} ${name} を漬け込みました！`);
