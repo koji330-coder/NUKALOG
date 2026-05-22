@@ -689,7 +689,8 @@ async function triggerGenerateRecommend() {
   </div>`;
 
   const userRequest = input.value.trim();
-  const res = await gasPost('generateRecommend', { userRequest });
+  // ★ GASのCORSポリシー問題を回避するためGET(gasCall)で送信
+  const res = await gasCall({ action: 'generateRecommend', userRequest });
 
   btn.disabled = false;
   btn.innerHTML = '糠床に新提案をねだる 🔮';
@@ -697,7 +698,8 @@ async function triggerGenerateRecommend() {
   if (!res?.ok || !res.data?.items?.length) {
     list.innerHTML = '';
     list.appendChild(buildRecEmpty());
-    showError('提案の生成に失敗しました。しばらくしてから再試行してください。');
+    const errMsg = res?.error ? `生成失敗: ${res.error}` : '提案の生成に失敗しました。しばらくしてから再試行してください。';
+    showError(errMsg);
     return;
   }
 
