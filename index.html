@@ -40,11 +40,45 @@
     --aurora-speed: 20s;
   }
   
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { background-color: var(--bg-base); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Hiragino Kaku Gothic ProN', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; color: var(--text); overflow-x: hidden; position: relative; overscroll-behavior-y: none; letter-spacing: -0.2px; }
+  * { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    -webkit-tap-highlight-color: transparent; 
+  }
+  
+  body {
+    background-color: var(--bg-base);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Hiragino Kaku Gothic ProN', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text);
+    overflow-x: hidden;
+    position: relative;
+    overscroll-behavior-y: none;
+    letter-spacing: -0.2px;
+  }
 
-  .aurora-bg-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; overflow: hidden; pointer-events: none; background: radial-gradient(circle at 50% 50%, #F5EFEB 0%, #E2D7C5 100%); }
-  .aurora-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.55; will-change: transform; transform: translate3d(0,0,0); transition: background 1.5s ease, opacity 1s ease; }
+  /* 呼吸するぬか床背景 */
+  .aurora-bg-container {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 50%, #F5EFEB 0%, #E2D7C5 100%);
+  }
+  .aurora-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.55;
+    will-change: transform;
+    transform: translate3d(0,0,0);
+    transition: background 1.5s ease, opacity 1s ease;
+  }
   .blob-gold { width: 450px; height: 450px; background: #DE9E52; top: -10%; left: -20%; animation: walk-gold var(--aurora-speed) ease-in-out infinite alternate; }
   .blob-green { width: 400px; height: 400px; background: #628A53; bottom: -5%; right: -10%; animation: walk-green calc(var(--aurora-speed) * 1.3) ease-in-out infinite alternate; }
   .blob-clay { width: 280px; height: 280px; background: #C27D66; top: 40%; right: -10%; animation: walk-clay calc(var(--aurora-speed) * 1.7) ease-in-out infinite alternate; }
@@ -53,51 +87,145 @@
   @keyframes walk-green { 0% { transform: translate3d(0, 0, 0) scale(1.1); } 50% { transform: translate3d(-90px, -70px, 0) scale(0.85); } 100% { transform: translate3d(40px, 20px, 0) scale(1.25); } }
   @keyframes walk-clay { 0% { transform: translate3d(0, 0, 0) scale(0.9); } 100% { transform: translate3d(-60px, 40px, 0) scale(1.2); } }
 
-  #app { width: 100%; max-width: 420px; min-height: 100vh; display: flex; flex-direction: column; position: relative; padding-top: env(safe-area-inset-top); }
+  #app {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-top: env(safe-area-inset-top);
+  }
 
-  #header { background: rgba(37, 34, 28, 0.92); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 18px 20px 16px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+  /* ヘッダー */
+  #header {
+    background: rgba(37, 34, 28, 0.92);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 18px 20px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
   #header .logo-sub { font-size: 9px; color: var(--green-light); letter-spacing: 3px; font-weight: 700; margin-bottom: 3px; }
   #header .logo-main { font-size: 22px; font-weight: 800; color: #FFFBF5; letter-spacing: -0.5px; }
-  #user-toggle { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 24px; padding: 6px 14px; cursor: pointer; touch-action: manipulation; }
+  #user-toggle {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 6px 14px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
   #user-toggle:active { background: rgba(255,255,255,0.18); }
   #user-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--user-koji); box-shadow: 0 0 6px var(--user-koji); }
   #user-name { font-size: 13px; font-weight: 700; color: #fff; }
 
   #content { flex: 1; padding: 24px 20px 120px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-  #ai-card { background: var(--surface-dark); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 18px; margin-bottom: 24px; display: none; box-shadow: 0 12px 30px rgba(37,34,28,0.15); }
+  /* AIメッセージカード */
+  #ai-card {
+    background: var(--surface-dark);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 24px;
+    display: none;
+    box-shadow: 0 12px 30px rgba(37,34,28,0.15);
+  }
   #ai-card .ai-label { font-size: 11px; color: var(--green-light); letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
   #ai-card .ai-text { font-size: 13.5px; color: #ECF2EB; line-height: 1.7; font-weight: 500; }
   #ai-card .ai-date { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 10px; text-align: right; }
 
-  .section-label { font-size: 12px; color: var(--text-soft); letter-spacing: 1.5px; font-weight: 700; margin-bottom: 14px; padding-left: 2px; text-transform: uppercase; }
+  .section-label {
+    font-size: 12px; color: var(--text-soft);
+    letter-spacing: 1.5px; font-weight: 700;
+    margin-bottom: 14px;
+    padding-left: 2px;
+    text-transform: uppercase;
+  }
 
-  .item-card, #add-panel, #history-list, .rec-card, .input-surface-card { background: var(--surface); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 10px 28px rgba(74, 69, 58, 0.05); }
+  .item-card, #add-panel, #history-list, .rec-card {
+    background: var(--surface);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 10px 28px rgba(74, 69, 58, 0.05);
+  }
+
   #add-panel { display: none; padding: 20px; margin-top: 12px; }
 
-  .item-card { padding: 16px 18px; margin-bottom: 14px; display: flex; align-items: center; gap: 16px; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+  .item-card {
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
   .item-card:active { transform: scale(0.99); }
-  .item-card.urgent { background: var(--orange-pale); border-color: rgba(224, 139, 82, 0.25); box-shadow: 0 12px 32px rgba(224, 139, 82, 0.12); }
+  .item-card.urgent {
+    background: var(--orange-pale);
+    border-color: rgba(224, 139, 82, 0.25);
+    box-shadow: 0 12px 32px rgba(224, 139, 82, 0.12);
+  }
   
   .item-card .veg-emoji { font-size: 36px; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.06)); }
   .item-card .item-info { flex: 1; min-width: 0; }
   .item-card .item-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.3px; }
   .item-card .item-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
   
-  .badge-time { font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 20px; background: rgba(42, 62, 44, 0.08); color: var(--green-dark); }
+  .badge-time {
+    font-size: 11px; font-weight: 700;
+    padding: 4px 11px; border-radius: 20px;
+    background: rgba(42, 62, 44, 0.08); color: var(--green-dark);
+  }
   .badge-time.urgent { background: #FCE5D3; color: #A64E19; }
   .badge-user { font-size: 10px; font-weight: 700; padding: 4px 9px; border-radius: 20px; }
   .badge-user.koji { background: rgba(74, 114, 176, 0.12); color: var(--user-koji); }
   .badge-user.hiromi { background: rgba(181, 99, 77, 0.12); color: var(--user-hiromi); }
   
-  .btn-remove { background: var(--green-dark); border: none; border-radius: 14px; padding: 10px 16px; cursor: pointer; font-size: 12px; font-weight: 700; color: #FFFBF5; white-space: nowrap; transition: all 0.15s; flex-shrink: 0; box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15); touch-action: manipulation; }
+  .btn-remove {
+    background: var(--green-dark); border: none;
+    border-radius: 14px; padding: 10px 16px;
+    cursor: pointer; font-size: 12px; font-weight: 700;
+    color: #FFFBF5; white-space: nowrap;
+    transition: all 0.15s; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15);
+    touch-action: manipulation;
+  }
   .btn-remove.urgent { background: var(--orange); box-shadow: 0 4px 12px rgba(224, 139, 82, 0.2); }
   .btn-remove:active { transform: scale(0.94); opacity: 0.9; }
 
-  #empty-state { background: var(--surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 22px; padding: 48px 20px; text-align: center; color: var(--text-faint); box-shadow: 0 10px 28px rgba(74, 69, 58, 0.03); display: none; }
+  #empty-state {
+    background: var(--surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 48px 20px;
+    text-align: center;
+    color: var(--text-faint);
+    box-shadow: 0 10px 28px rgba(74, 69, 58, 0.03);
+    display: none;
+  }
   #empty-state .empty-emoji { font-size: 42px; display: block; margin-bottom: 12px; }
 
-  #add-btn { width: 100%; background: var(--green-dark); color: #FFFBF5; border: none; border-radius: 20px; padding: 18px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 12px; letter-spacing: 0.5px; box-shadow: 0 8px 24px rgba(42, 62, 44, 0.25); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); touch-action: manipulation; }
+  #add-btn {
+    width: 100%; background: var(--green-dark); color: #FFFBF5;
+    border: none; border-radius: 20px; padding: 18px;
+    font-size: 16px; font-weight: 800; cursor: pointer;
+    margin-top: 12px; letter-spacing: 0.5px;
+    box-shadow: 0 8px 24px rgba(42, 62, 44, 0.25);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    touch-action: manipulation;
+  }
   #add-btn:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15); }
   
   #add-panel .panel-title { font-size: 15px; font-weight: 700; color: var(--text-mid); margin-bottom: 18px; }
@@ -105,37 +233,81 @@
   .veg-category .cat-label { font-size: 10px; color: var(--text-faint); letter-spacing: 1.5px; font-weight: 700; margin-bottom: 10px; }
   .veg-grid { display: flex; flex-wrap: wrap; gap: 8px; }
   
-  .veg-btn { background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255,255,255,0.4); border-radius: 16px; padding: 11px; cursor: pointer; text-align: center; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); flex: 1 1 calc(25% - 8px); max-width: calc(25% - 6px); box-shadow: 0 4px 10px rgba(0,0,0,0.02); touch-action: manipulation; }
+  .veg-btn {
+    background: rgba(255, 255, 255, 0.5); 
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 16px; padding: 11px;
+    cursor: pointer; text-align: center;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); flex: 1 1 calc(25% - 8px);
+    max-width: calc(25% - 6px); box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    touch-action: manipulation;
+  }
   .veg-btn .v-emoji { font-size: 26px; line-height: 1; display: block; }
   .veg-btn .v-name { font-size: 10px; color: var(--text-soft); font-weight: 600; margin-top: 5px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .veg-btn.selected { background: var(--green-dark); border-color: var(--green-dark); transform: scale(1.04); box-shadow: 0 6px 16px rgba(42, 62, 44, 0.25); }
+  .veg-btn.selected {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+    transform: scale(1.04);
+    box-shadow: 0 6px 16px rgba(42, 62, 44, 0.25);
+  }
   .veg-btn.selected .v-name { color: var(--green-light); font-weight: 700; }
 
-  #selected-info { background: var(--green-pale); border-radius: 14px; padding: 14px; margin-top: 10px; font-size: 13.5px; color: var(--green-dark); font-weight: 700; display: none; text-align: center; }
+  #selected-info {
+    background: var(--green-pale); border-radius: 14px;
+    padding: 14px; margin-top: 10px;
+    font-size: 13.5px; color: var(--green-dark); font-weight: 700;
+    display: none; text-align: center;
+  }
   .panel-btns { display: flex; gap: 12px; margin-top: 20px; }
-  .btn-cancel { flex: 1; background: rgba(0,0,0,0.05); border: none; border-radius: 16px; padding: 14px; cursor: pointer; font-size: 14px; color: var(--text-soft); font-weight: 700; touch-action: manipulation; }
-  .btn-confirm { flex: 2; background: var(--green-dark); border: none; border-radius: 16px; padding: 14px; cursor: pointer; font-size: 14px; color: #fff; font-weight: 800; box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15); touch-action: manipulation; }
+  .btn-cancel {
+    flex: 1; background: rgba(0,0,0,0.05); border: none;
+    border-radius: 16px; padding: 14px;
+    cursor: pointer; font-size: 14px; color: var(--text-soft); font-weight: 700;
+    touch-action: manipulation;
+  }
+  .btn-confirm {
+    flex: 2; background: var(--green-dark); border: none;
+    border-radius: 16px; padding: 14px;
+    cursor: pointer; font-size: 14px; color: #fff; font-weight: 800;
+    box-shadow: 0 4px 12px rgba(42, 62, 44, 0.15);
+    touch-action: manipulation;
+  }
   .btn-confirm:disabled { background: #C5BEB0 !important; cursor: not-allowed; opacity: 0.5; box-shadow: none; }
 
-  .btn-back { display: block; width: 100%; border: none; border-radius: 16px; padding: 14px; font-size: 14px; font-weight: 700; background: rgba(0,0,0,0.05); color: var(--text-mid); cursor: pointer; text-align: center; margin-top: 14px; transition: background 0.2s; touch-action: manipulation; }
+  .btn-back {
+    display: block; width: 100%; border: none; border-radius: 16px;
+    padding: 14px; font-size: 14px; font-weight: 700; background: rgba(0,0,0,0.05);
+    color: var(--text-mid); cursor: pointer; text-align: center; margin-top: 14px;
+    transition: background 0.2s; touch-action: manipulation;
+  }
+  .btn-back:active { background: rgba(0,0,0,0.1); }
 
-  .nuka-textarea { width: 100%; background: rgba(255,255,255,0.4); border: 1px solid rgba(0,0,0,0.08); border-radius: 14px; padding: 12px; font-size: 13.5px; font-family: inherit; color: var(--text); resize: none; margin-bottom: 12px; outline: none; transition: border 0.2s; }
-  .nuka-textarea:focus { border-color: var(--green-mid); background: rgba(255,255,255,0.7); }
-  .input-surface-card { padding: 16px; margin-bottom: 20px; }
-
-  #feedback-screen { display: none; text-align: center; padding-top: 20px; }
+  /* フィードバック画面 */
+  #feedback-screen { display: none; text-align: center; padding-top: 32px; }
   #feedback-screen .fb-emoji { font-size: 80px; margin-bottom: 16px; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.08)); }
   #feedback-screen .fb-title { font-size: 24px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
-  #feedback-screen .fb-sub { font-size: 13.5px; color: var(--text-soft); margin-bottom: 20px; }
-  .fb-btn { display: block; width: 100%; border: none; border-radius: 18px; padding: 18px; font-size: 15px; font-weight: 800; cursor: pointer; margin-bottom: 14px; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05); touch-action: manipulation; }
+  #feedback-screen .fb-sub { font-size: 13.5px; color: var(--text-soft); margin-bottom: 40px; }
+  .fb-btn {
+    display: block; width: 100%; border: none; border-radius: 18px;
+    padding: 18px; font-size: 15px; font-weight: 800;
+    cursor: pointer; margin-bottom: 14px; color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    touch-action: manipulation;
+  }
   .fb-btn.perfect { background: var(--green-dark); box-shadow: 0 6px 20px rgba(42,62,44,0.25); }
   .fb-btn.light { background: var(--green-mid); }
   .fb-btn.heavy { background: var(--red-soft); }
 
+  /* レコメンド画面 */
   #recommend-screen { display: none; padding-top: 4px; }
-  #recommend-screen .rec-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
-  .rec-card { padding: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: transform 0.2s, background 0.2s; }
+  #recommend-screen .rec-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 20px; }
+  
+  .rec-card { 
+    padding: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 16px; 
+    cursor: pointer; transition: transform 0.2s, background 0.2s;
+  }
   .rec-card:active { transform: scale(0.98); background: var(--surface-active); }
+  
   .rec-card .rc-emoji { font-size: 40px; flex-shrink: 0; }
   .rec-card .rc-info { flex: 1; }
   .rec-card .rc-name { font-size: 17px; font-weight: 700; color: var(--text); }
@@ -145,6 +317,7 @@
   .rec-tag.unique { background: #EFE9F5; color: #6A4A93; }
   .rec-tag.twist { background: #F5EAE6; color: var(--red-soft); }
 
+  /* 履歴画面 */
   #history-screen { display: none; padding-top: 4px; }
   #history-list { overflow: hidden; padding: 4px 0; }
   .hist-item { padding: 16px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.04); }
@@ -153,16 +326,37 @@
   .hist-info { flex: 1; }
   .hist-name { font-size: 16px; font-weight: 700; color: var(--text); }
   .hist-meta { font-size: 12px; color: var(--text-faint); margin-top: 4px; }
-  .hist-comment { font-size: 12.5px; color: var(--green-dark); margin-top: 6px; font-style: italic; background: rgba(255,255,255,0.3); padding: 6px 10px; border-radius: 8px; display: inline-block; }
   .hist-fb { font-size: 24px; flex-shrink: 0; }
   #history-empty { text-align: center; padding: 48px; color: var(--text-faint); font-size: 14px; display: none; }
 
-  #toast { position: fixed; top: calc(84px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%) translateY(-10px); background: rgba(37, 34, 28, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #FFFBF5; padding: 14px 28px; border-radius: 30px; font-size: 14px; font-weight: 700; box-shadow: 0 12px 32px rgba(0,0,0,0.25); z-index: 200; opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); white-space: nowrap; pointer-events: none; }
+  /* トースト */
+  #toast {
+    position: fixed; top: calc(84px + env(safe-area-inset-top)); left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: rgba(37, 34, 28, 0.95);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: #FFFBF5; padding: 14px 28px; border-radius: 30px;
+    font-size: 14px; font-weight: 700;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    z-index: 200; opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap; pointer-events: none;
+  }
   #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
   #error-bar { background: #FDECEA; border: 1px solid #F5C6C0; border-radius: 16px; padding: 14px; font-size: 12px; color: #B04040; margin-bottom: 16px; display: none; }
   .loading-spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
 
-  #bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 420px; background: rgba(37, 34, 28, 0.88); backdrop-filter: blur(24px) saturate(140%); -webkit-backdrop-filter: blur(24px) saturate(140%); display: flex; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 24px rgba(0,0,0,0.05); }
+  /* ボトムナビ */
+  #bottom-nav {
+    position: fixed; bottom: 0; width: 100%; max-width: 420px;
+    background: rgba(37, 34, 28, 0.88);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    display: flex; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.05);
+  }
   .nav-btn { flex: 1; background: none; border: none; padding: 16px 8px 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative; touch-action: manipulation; }
   .nav-emoji { font-size: 22px; opacity: 0.4; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
   .nav-btn.active .nav-emoji { opacity: 1; transform: translateY(-2px) scale(1.1); }
@@ -225,12 +419,6 @@
     <div id="feedback-screen">
       <div class="fb-emoji" id="fb-emoji"></div>
       <div class="fb-title" id="fb-title"></div>
-      
-      <div class="input-surface-card">
-        <div style="font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:8px;text-align:left;">💡 飛べた感想・メモ（AIの学習材料になります）</div>
-        <textarea id="feedback-comment" class="nuka-textarea" rows="2" placeholder="例: 少し酸っぱいけどお酒に合う！、ひろみが大絶賛"></textarea>
-      </div>
-      
       <div class="fb-sub">フィードバックで次回の目安が精度アップします</div>
       <button class="fb-btn perfect" onclick="submitFeedback('perfect')">😋 ちょうどよかった！</button>
       <button class="fb-btn light" onclick="submitFeedback('light')">😅 浅かった…</button>
@@ -238,12 +426,6 @@
     </div>
 
     <div id="recommend-screen">
-      <div class="input-surface-card">
-        <div style="font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:8px;">🔮 ぬか床の魔術師にリクエストする</div>
-        <textarea id="rec-request-input" class="nuka-textarea" rows="2" placeholder="例: セロリに初挑戦したいから目安時間も教えて！、ビールに最高に合うやつ"></textarea>
-        <button id="rec-generate-btn" class="btn-confirm" style="width:100%;border-radius:12px;padding:12px;" onclick="triggerGenerateRecommend()">糠床に新提案をねだる 🔮</button>
-      </div>
-
       <div class="section-label">AIレコメンド</div>
       <div class="rec-title">次に漬けるなら？💡</div>
       <div id="rec-list"></div>
@@ -266,7 +448,7 @@
       <div class="nav-label">糠床</div>
       <div class="nav-active-bar"></div>
     </button>
-    <button class="nav-btn" onclick="showScreen('recommend');loadLastRecommend();" id="nav-recommend">
+    <button class="nav-btn" onclick="showScreen('recommend');renderRecommend();" id="nav-recommend">
       <div class="nav-emoji">💡</div>
       <div class="nav-label">提案</div>
       <div class="nav-active-bar"></div>
@@ -280,10 +462,10 @@
 </div>
 
 <script>
-// 【完全復帰】消し飛んでいた最重要環境変数をガッツリ再配置
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwQoaHMeuDsAjB-laMpiT6uXD8f43K2sXF_9MGx-DftPwzBvYmdUfWinB-B9-56v_DN/exec';
 
 let VEGETABLES = [];
+
 const CATEGORIES = ['定番','季節','珍しい','変化球'];
 const USERS = [
   { id:'koji',   name:'こうじ',  color:'#4A72B0', cls:'koji'   },
@@ -305,30 +487,42 @@ async function gasCall(params) {
     const res = await fetch(url.toString(), { method:'GET', mode:'cors' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
-  } catch(e) { showError('通信エラー: ' + e.message); return null; }
+  } catch(e) {
+    showError('通信エラー: ' + e.message);
+    return null;
+  }
 }
 
 async function gasPost(action, body) {
   if (!GAS_URL) return mockApi({ action, ...body });
   try {
     const res = await fetch(GAS_URL, {
-      method: 'POST', mode: 'cors',
+      method: 'POST',
+      mode: 'cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action, body })
     });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     return await res.json();
-  } catch(e) { showError('通信エラー: ' + e.message); return null; }
+  } catch(e) {
+    showError('通信エラー: ' + e.message);
+    return null;
+  }
 }
 
 function mockApi(params) {
   const action = params.action;
-  if (action === 'getVegMaster') return Promise.resolve({ ok: true, data: [{ emoji:'🥒', name:'きゅうり', defaultHours:18, adjustedHours:18, category:'定番' }] });
+  if (action === 'getVegMaster') {
+    return Promise.resolve({ ok: true, data: [
+      { emoji:'🥒', name:'きゅうり', defaultHours:18, adjustedHours:18, category:'定番' },
+      { emoji:'🍆', name:'なす', defaultHours:36, adjustedHours:36, category:'定番' }
+    ]});
+  }
   if (action === 'getItems') return Promise.resolve({ ok:true, data: [] });
   if (action === 'getHistory') return Promise.resolve({ ok:true, data: [] });
   if (action === 'getAiMessage') return Promise.resolve({ ok:true, data: { text: 'モック稼働中' } });
-  if (action === 'getLastRecommend' || action === 'generateRecommend') return Promise.resolve({ ok:true, data: [{ emoji:'🔮', name:'セロリ', reason:'リクエストに応えて。目安は15時間！', tag:'変化球', forUser:'both' }] });
-  if (action === 'addItem') return Promise.resolve({ ok: true, data: { id: 'm1', vegEmoji:'🥒', vegName:'きゅうり', hours:18, adjustedHours:18, addedAt:new Date().toISOString(), userId:'koji', userName:'こうじ' } });
+  if (action === 'getRecommend') return Promise.resolve({ ok:true, data: [{ emoji:'🍌', name:'バナナ', reason:'魔術師の直感。トロトロ甘酸っぱくなります', tag:'変化球', forUser:'both' }] });
+  if (action === 'addItem') return Promise.resolve({ ok: true, data: { id: 'mock_1', vegEmoji: params.vegEmoji, vegName: params.vegName, hours: 24, adjustedHours: 24, addedAt: new Date().toISOString(), userId: 'koji', userName: 'こうじ' } });
   return Promise.resolve({ ok:true });
 }
 
@@ -341,10 +535,17 @@ async function loadAll() {
   ]);
 
   if (vegRes?.ok && Array.isArray(vegRes.data)) {
-    VEGETABLES = vegRes.data.map(v => ({ emoji: v.emoji || '🥗', name: v.name, hours: parseInt(v.adjustedHours || v.defaultHours || 24), category: v.category || '定番' }));
+    VEGETABLES = vegRes.data.map(v => ({
+      emoji: v.emoji || '🥗',
+      name: v.name,
+      hours: parseInt(v.adjustedHours || v.defaultHours || 24),
+      category: v.category || '定番'
+    }));
   }
+
   if (itemsRes?.ok) { items = itemsRes.data || []; }
   if (histRes?.ok)  { history = histRes.data || []; }
+
   if (aiRes?.ok && aiRes.data) {
     const d = aiRes.data;
     if (d.text) {
@@ -354,13 +555,14 @@ async function loadAll() {
     }
     applyNukaVital(d);
   }
+
   renderItems();
   renderHistory();
 }
 
 function applyNukaVital(vital) {
   if (!vital) return;
-  const activity = Math.min(1.0, Math.max(0.0, vital.lacticAcidActivity || 0.5));
+  const activity = Math.min(1.0, Math.max(0.0, Math.softActivity || vital.lacticAcidActivity || 0.5));
   const speedS = Math.round(6 + (1.0 - activity) * 26);
   document.documentElement.style.setProperty('--aurora-speed', speedS + 's');
 
@@ -369,9 +571,13 @@ function applyNukaVital(vital) {
   document.querySelectorAll('.aurora-blob').forEach(el => el.style.opacity = opacity);
 
   const emotion = vital.nukaEmotion || 'stable';
-  const emotionColors = { happy:  { gold: '#E8B060', green: '#70A060', clay: '#D4906A' }, hungry: { gold: '#C8844C', green: '#506840', clay: '#B86050' }, stable: { gold: '#DE9E52', green: '#628A53', clay: '#C27D66' }, tired:  { gold: '#B89060', green: '#4A6840', clay: '#A06858' } };
+  const emotionColors = {
+    happy:  { gold: '#E8B060', green: '#70A060', clay: '#D4906A' },
+    hungry: { gold: '#C8844C', green: '#506840', clay: '#B86050' },
+    stable: { gold: '#DE9E52', green: '#628A53', clay: '#C27D66' },
+    tired:  { gold: '#B89060', green: '#4A6840', clay: '#A06858' },
+  };
   const cols = emotionColors[emotion] || emotionColors.stable;
-  
   const blobGold  = document.querySelector('.blob-gold');
   const blobGreen = document.querySelector('.blob-green');
   const blobClay  = document.querySelector('.blob-clay');
@@ -481,7 +687,6 @@ function renderHistory() {
       <div class="hist-info">
         <div class="hist-name">${item.vegName}</div>
         <div class="hist-meta">${relativeDate(item.addedAt)} · ${userObj.name}</div>
-        ${item.comment ? `<div class="hist-comment">💬 ${item.comment}</div>` : ''}
       </div>
       <div class="hist-fb">${FB_EMOJI[item.feedback] || '—'}</div>
     `;
@@ -489,92 +694,104 @@ function renderHistory() {
   });
 }
 
-async function loadLastRecommend() {
+async function renderRecommend() {
   const list = document.getElementById('rec-list');
-  list.innerHTML = `<div style="text-align:center;padding:30px 0;color:var(--text-soft);font-size:13px;">前回の提案をロード中...</div>`;
-  const res = await gasCall({ action: 'getLastRecommend' });
-  renderRecommendList(res);
-}
-
-async function triggerGenerateRecommend() {
-  const btn = document.getElementById('rec-generate-btn');
-  const input = document.getElementById('rec-request-input');
-  const list = document.getElementById('rec-list');
-  
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading-spinner"></span>魔術師が調合中...';
   list.innerHTML = `
     <div style="text-align:center;padding:40px 0;color:var(--text-soft);">
-      <div style="font-size:32px;margin-bottom:10px;animation:spin 1.5s linear infinite;display:inline-block;">🔮</div>
-      <div style="font-size:13px;margin-top:4px;">Gemini課金爆発中（プロンプト解析中）...</div>
+      <div style="font-size:32px;margin-bottom:10px;animation:spin 1.5s linear infinite;display:inline-block;">🥒</div>
+      <div style="font-size:13px;margin-top:4px;">AIが糠床と密談中…</div>
     </div>`;
 
-  const res = await gasPost('generateRecommend', { userRequest: input.value });
-  renderRecommendList(res);
-  
-  btn.disabled = false;
-  btn.innerHTML = '糠床に新提案をねだる 🔮';
-  if (res?.ok) input.value = '';
-}
+  const res = await gasCall({ action: 'getRecommend' });
 
-function renderRecommendList(res) {
-  const list = document.getElementById('rec-list');
   if (!res?.ok || !Array.isArray(res.data) || res.data.length === 0) {
-    list.innerHTML = `<div style="text-align:center;padding:30px 0;color:var(--text-faint);font-size:13px;">提案ストックがありません。「新提案をねだる」を押してください。</div>`;
+    renderRecommendFallback();
     return;
   }
+
   const tagCls   = { '季節':'season', '定番':'season', '変化球':'twist', '珍しい':'unique' };
   const userLabel = { koji:'こうじ向き', hiromi:'ひろみ向き', both:'' };
 
   list.innerHTML = '';
-  res.data.forEach(r => {
+  res.data.slice(0, 5).forEach(r => {
     const tag = r.tag || '定番';
     const forUser = r.forUser || 'both';
     const div = document.createElement('div');
     div.className = 'rec-card';
+    
     div.onclick = () => quickPickleFromAi(r.emoji, r.name, tag);
     
     div.innerHTML = `
       <div class="rc-emoji">${r.emoji}</div>
       <div class="rc-info">
         <div class="rc-name">${r.name}${userLabel[forUser] ? `<span style="font-size:10px;font-weight:600;color:var(--text-faint);margin-left:6px;">${userLabel[forUser]}</span>` : ''}</div>
-        <div class="rc-reason">${r.reason}</div>
+        <div class="rc-reason">${r.reason} (タップで即漬け)</div>
       </div>
       <div class="rec-tag ${tagCls[tag] || 'season'}">${tag}</div>
     `;
     list.appendChild(div);
   });
+
+  const btn = document.createElement('button');
+  btn.className = 'btn-back';
+  btn.style.marginTop = '12px';
+  btn.textContent = '🔄 別の提案を見る';
+  btn.onclick = () => renderRecommend();
+  list.appendChild(btn);
 }
 
+// 【バグ修正完了】フロントのローカル配列のみ更新するのをやめ、完全に同期ロードさせる鉄壁仕様に変更
 async function quickPickleFromAi(emoji, name, tag) {
   const exist = VEGETABLES.find(v => v.name === name);
   const hours = exist ? exist.hours : 24;
+
   if (!confirm(`現在のユーザー「${currentUser.name}」として、${emoji} ${name} を今すぐ糠床に漬け込みますか？`)) return;
 
   showToast(`ぬか床に ${name} を押し込み中...`);
-  const res = await gasPost('addItem', { vegEmoji: emoji, vegName: name, hours: hours, adjustedHours: hours, userId: currentUser.id, userName: currentUser.name });
+  
+  const res = await gasPost('addItem', {
+    vegEmoji: emoji, vegName: name, hours: hours, adjustedHours: hours, userId: currentUser.id, userName: currentUser.name
+  });
+
   if (res?.ok) {
     showToast(`${emoji} ${name} を漬け込みました！`);
+    
+    // バックエンドから返ってきた最新の配列を即時フロントの「items」に代入してバグを徹底ガード
     const fresh = await gasCall({ action: 'getItems' });
     if (fresh?.ok) { items = fresh.data || []; }
+    
+    // マスタも同時に再読込して画面をホームに強制遷移
     await loadAll(); 
     showScreen('home');
-  } else { showError('漬け込みに失敗しました。'); }
+  } else {
+    showError('漬け込みに失敗しました。');
+  }
+}
+
+function renderRecommendFallback() {
+  const list = document.getElementById('rec-list');
+  list.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-faint);">提案データを取得できませんでした</div>`;
 }
 
 function buildVegGrid() {
   const container = document.getElementById('veg-categories');
   container.innerHTML = '';
-  if(VEGETABLES.length === 0) { container.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-faint);font-size:12px;">マスタを読み込み中、または空です</div>`; return; }
+  
+  if(VEGETABLES.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:20px;color:var(--text-faint);font-size:12px;">マスタを読み込み中、または空です</div>`;
+    return;
+  }
 
   CATEGORIES.forEach(cat => {
     const vegs = VEGETABLES.filter(v => v.category === cat);
     if(vegs.length === 0) return;
+    
     const section = document.createElement('div');
     section.className = 'veg-category';
     section.innerHTML = `<div class="cat-label">${cat}</div>`;
     const grid = document.createElement('div');
     grid.className = 'veg-grid';
+    
     vegs.forEach((v) => {
       const idx = VEGETABLES.indexOf(v);
       const btn = document.createElement('button');
@@ -591,7 +808,9 @@ function buildVegGrid() {
 
 function selectVeg(idx) {
   selectedVeg = idx;
-  document.querySelectorAll('.veg-btn').forEach(b => { b.classList.toggle('selected', parseInt(b.dataset.idx) === idx); });
+  document.querySelectorAll('.veg-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.idx) === idx);
+  });
   const v = VEGETABLES[idx];
   const info = document.getElementById('selected-info');
   const hoursLabel = v.hours >= 24 ? `約${v.hours/24}日` : `約${v.hours}時間`;
@@ -610,7 +829,11 @@ document.getElementById('add-btn').addEventListener('click', () => {
 });
 
 document.getElementById('cancel-btn').addEventListener('click', closeAddPanel);
-function closeAddPanel() { document.getElementById('add-btn').style.display = 'block'; document.getElementById('add-panel').style.display = 'none'; selectedVeg = null; }
+function closeAddPanel() {
+  document.getElementById('add-btn').style.display = 'block';
+  document.getElementById('add-panel').style.display = 'none';
+  selectedVeg = null;
+}
 
 document.getElementById('confirm-btn').addEventListener('click', async () => {
   if (selectedVeg === null) return;
@@ -619,8 +842,15 @@ document.getElementById('confirm-btn').addEventListener('click', async () => {
   btn.disabled = true;
   btn.innerHTML = '<span class="loading-spinner"></span>登録中…';
 
-  const res = await gasPost('addItem', { vegEmoji: v.emoji, vegName: v.name, hours: v.hours, adjustedHours: v.hours, userId: currentUser.id, userName: currentUser.name });
-  if (res?.ok) { await loadAll(); closeAddPanel(); showToast(`${v.emoji} ${v.name}を漬け込みました！`); }
+  const res = await gasPost('addItem', {
+    vegEmoji: v.emoji, vegName: v.name, hours: v.hours, adjustedHours: v.hours, userId: currentUser.id, userName: currentUser.name
+  });
+
+  if (res?.ok) {
+    await loadAll();
+    closeAddPanel();
+    showToast(`${v.emoji} ${v.name}を漬け込みました！`);
+  }
   btn.disabled = false;
   btn.innerHTML = '漬け込む 🥒';
 });
@@ -631,34 +861,35 @@ function startRemove(id) {
   pendingRemove = item;
   document.getElementById('fb-emoji').textContent = item.vegEmoji;
   document.getElementById('fb-title').textContent = `${item.vegName}、どうでしたか？`;
-  document.getElementById('feedback-comment').value = '';
   showScreen('feedback');
 }
 
 async function submitFeedback(result) {
   if (!pendingRemove) return;
-  const commentText = document.getElementById('feedback-comment').value;
-  
-  const res = await gasPost('removeItem', { 
-    id: pendingRemove.id, 
-    feedback: result,
-    comment: commentText
-  });
-  
+  const res = await gasPost('removeItem', { id: pendingRemove.id, feedback: result });
   if (res?.ok) {
     await loadAll();
     pendingRemove = null;
     showScreen('recommend');
-    loadLastRecommend();
+    renderRecommend();
   }
 }
 
 function showScreen(name) {
   currentScreen = name;
-  ['home','feedback','recommend','history'].forEach(s => { document.getElementById(s + '-screen').style.display = s === name ? 'block' : 'none'; });
-  ['home','recommend','history'].forEach(s => { const btn = document.getElementById('nav-' + s); if (btn) btn.classList.toggle('active', s === name); });
+  ['home','feedback','recommend','history'].forEach(s => {
+    document.getElementById(s + '-screen').style.display = s === name ? 'block' : 'none';
+  });
+  ['home','recommend','history'].forEach(s => {
+    const btn = document.getElementById('nav-' + s);
+    if (btn) btn.classList.toggle('active', s === name);
+  });
   if (name === 'history')   renderHistory();
-  if (name === 'home') { document.getElementById('add-btn').style.display = 'block'; document.getElementById('add-panel').style.display = 'none'; renderItems(); }
+  if (name === 'home') {
+    document.getElementById('add-btn').style.display = 'block';
+    document.getElementById('add-panel').style.display = 'none';
+    renderItems(); // ホームに戻る瞬間にアイテム描画を確実に行う
+  }
   window.scrollTo(0, 0);
 }
 
@@ -670,11 +901,29 @@ document.getElementById('user-toggle').addEventListener('click', () => {
   document.getElementById('user-dot').style.boxShadow = `0 0 6px ${currentUser.color}`;
 });
 
-function updateUrgentBadge(n) { const badge = document.getElementById('urgent-badge'); badge.textContent = n; badge.classList.toggle('show', n > 0); }
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2500); }
-function showError(msg) { const bar = document.getElementById('error-bar'); bar.textContent = '⚠ ' + msg; bar.style.display = 'block'; setTimeout(() => bar.style.display = 'none', 5000); }
+function updateUrgentBadge(n) {
+  const badge = document.getElementById('urgent-badge');
+  badge.textContent = n;
+  badge.classList.toggle('show', n > 0);
+}
 
-setInterval(() => { if (currentScreen === 'home') renderItems(); }, 10000);
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showError(msg) {
+  const bar = document.getElementById('error-bar');
+  bar.textContent = '⚠ ' + msg;
+  bar.style.display = 'block';
+  setTimeout(() => bar.style.display = 'none', 5000);
+}
+
+setInterval(() => {
+  if (currentScreen === 'home') renderItems();
+}, 10000);
 
 showScreen('home');
 loadAll();
